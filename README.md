@@ -2,7 +2,7 @@
 
 > **Match. Connect. Build Together.**
 
-![Stars](https://img.shields.io/github/stars/oss-marketplace/oss-marketplace?style=flat)
+![Stars](https://img.shields.io/github/stars/sundarlohar007/oss-marketplace?style=flat)
 ![Python](https://img.shields.io/badge/Python-3.11+-blue)
 ![License](https://img.shields.io/badge/License-MIT-green)
 
@@ -60,24 +60,28 @@
 ### Install the CLI
 
 ```bash
-# macOS / Linux
-curl -fsSL https://raw.githubusercontent.com/oss-marketplace/cli/main/install.sh | bash
+# Clone the repository
+git clone https://github.com/sundarlohar007/oss-marketplace.git
+cd oss-marketplace
 
-# Windows (PowerShell)
-iwr https://raw.githubusercontent.com/oss-marketplace/cli/main/install.ps1 -useb | iex
+# Install CLI tool (macOS/Linux)
+./cli/install.sh
 
-# Python pip
-pip install oss-marketplace
+# Install CLI tool (Windows PowerShell)
+.\cli\install.ps1
+
+# Or install via pip
+pip install ./cli
 ```
 
 ### Find Your Perfect Match (30 seconds)
 
 ```bash
 # 1. Generate your Contributor DNA
-oss-profile create --github your-username
+python cli/oss_profile.py create --github your-username
 
 # 2. Discover matching projects
-oss-match find --contributor your-username
+python cli/oss_match.py find --contributor your-username
 
 # 3. Get matched to contributors (for maintainers)
 oss-match find --maintainer your-repo
@@ -193,7 +197,7 @@ We're building this in the open. Contributions welcome!
 
 ```bash
 # Clone the repo
-git clone https://github.com/oss-marketplace/oss-marketplace.git
+git clone https://github.com/sundarlohar007/oss-marketplace.git
 
 # Setup development environment
 cd oss-marketplace
@@ -219,7 +223,7 @@ See [CONTRIBUTING.md](CONTRIBUTING.md) for full guidelines.
 - 💬 [Discord Server](https://discord.gg/oss-marketplace)
 - 🐦 [Twitter/X](https://twitter.com/oss_marketplace)
 - 📝 [Dev.to Blog](https://dev.to/oss-marketplace)
-- 🐛 [Issue Tracker](https://github.com/oss-marketplace/oss-marketplace/issues)
+- 🐛 [Issue Tracker](https://github.com/sundarlohar007/oss-marketplace/issues)
 
 ## 📄 License
 

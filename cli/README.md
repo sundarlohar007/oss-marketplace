@@ -5,15 +5,18 @@ Command-line tools for matching open source maintainers with contributors.
 ## Installation
 
 ```bash
-# macOS / Linux
-curl -fsSL https://raw.githubusercontent.com/oss-marketplace/oss-marketplace/main/cli/install.sh | bash
+# Clone the repository
+git clone https://github.com/sundarlohar007/oss-marketplace.git
+cd oss-marketplace
 
-# Or use pip
-pip install oss-marketplace
+# macOS / Linux
+./cli/install.sh
+
+# Windows (PowerShell)
+.\cli\install.ps1
 
 # Or install from source
-git clone https://github.com/oss-marketplace/oss-marketplace.git
-cd oss-marketplace/cli
+cd cli
 pip install -e .
 ```
 
