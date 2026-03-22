@@ -50,11 +50,17 @@ class GitHubClient:
     
     def get(self, endpoint: str, params: dict = None) -> dict:
         url = f"{GITHUB_API}/{endpoint}"
-        response = requests.get(url, headers=self.headers, params=params)
-        if response.status_code == 404:
+        try:
+            response = requests.get(url, headers=self.headers, params=params, timeout=10)
+            if response.status_code == 404:
+                return None
+            if response.status_code == 403:
+                console.print("[yellow]⚠️ Rate limit hit. Add a GitHub token with --token for more requests.[/yellow]")
+                return None
+            response.raise_for_status()
+            return response.json()
+        except requests.exceptions.RequestException:
             return None
-        response.raise_for_status()
-        return response.json()
     
     def get_user(self, username: str) -> dict:
         return self.get(f"users/{username}")

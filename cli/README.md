@@ -26,42 +26,33 @@ pip install -e .
 
 ```bash
 # Create a profile for any GitHub user
-oss-profile create --github octocat
+python oss_profile.py create --github octocat
 
 # Save locally for offline access
-oss-profile create --github octocat --save
-
-# View saved profile
-oss-profile view --user octocat
-
-# List all saved profiles
-oss-profile list
+python oss_profile.py create --github octocat --save
 ```
 
 ### oss-match - Match Finder
 
 ```bash
 # Find projects matching a contributor
-oss-match find --contributor octocat
+python oss_match.py find --contributor octocat
 
 # Find contributors for a project
-oss-match find --maintainer facebook --repo react
+python oss_match.py find --maintainer facebook --repo react
 
 # Increase result limit
-oss-match find --contributor octocat --limit 20
+python oss_match.py find --contributor octocat --limit 20
 ```
 
 ### oss-health - Project Health Checker
 
 ```bash
 # Check a project's health
-oss-health check --owner facebook --repo react
-
-# Or use shorthand
-oss-health check facebook/react
+python oss_health.py --owner facebook --repo react
 
 # Output as JSON
-oss-health check facebook/react --json
+python oss_health.py --owner facebook --repo react --json
 ```
 
 ## Requirements
@@ -77,5 +68,6 @@ With GitHub token: 5,000 requests/hour
 Get a token at: https://github.com/settings/tokens
 
 ```bash
-export GITHUB_TOKEN="your-token-here"
+# Use with commands
+python oss_match.py find --contributor octocat --token YOUR_TOKEN
 ```

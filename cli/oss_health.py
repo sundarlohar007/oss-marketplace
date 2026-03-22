@@ -49,11 +49,17 @@ class GitHubClient:
     
     def get(self, endpoint: str, params: dict = None) -> dict:
         url = f"{GITHUB_API}/{endpoint}"
-        response = requests.get(url, headers=self.headers, params=params)
-        if response.status_code == 404:
+        try:
+            response = requests.get(url, headers=self.headers, params=params, timeout=10)
+            if response.status_code == 404:
+                return None
+            if response.status_code == 403:
+                console.print("[yellow]⚠️ Rate limit hit. Add a GitHub token with --token for more requests.[/yellow]")
+                return None
+            response.raise_for_status()
+            return response.json()
+        except requests.exceptions.RequestException:
             return None
-        response.raise_for_status()
-        return response.json()
     
     def get_all_pages(self, endpoint: str, params: dict = None, max_pages: int = 5) -> List[dict]:
         """Get all pages of a paginated endpoint."""
@@ -505,9 +511,9 @@ def main():
         formatter_class=argparse.RawDescriptionHelpFormatter,
         epilog="""
 Examples:
-  %(prog)s check --owner facebook --repo react
-  %(prog)s check facebook/react
-  %(prog)s check facebook/react --json
+  %(prog)s --owner facebook --repo react
+  %(prog)s facebook react
+  %(prog)s facebook/react --json
         """
     )
     

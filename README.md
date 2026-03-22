@@ -80,11 +80,11 @@ pip install ./cli
 # 1. Generate your Contributor DNA
 python cli/oss_profile.py create --github your-username
 
-# 2. Discover matching projects
+# 2. Discover matching projects for a contributor
 python cli/oss_match.py find --contributor your-username
 
-# 3. Get matched to contributors (for maintainers)
-oss-match find --maintainer your-repo
+# 3. Analyze project health
+python cli/oss_health.py --owner owner --repo repository
 ```
 
 ### Example Output
