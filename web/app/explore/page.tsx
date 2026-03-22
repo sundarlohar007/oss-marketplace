@@ -1,21 +1,24 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { motion } from "framer-motion";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
+import { SkeletonCard } from "@/components/ui/skeleton";
+import { ThemeToggle } from "@/components/theme-toggle";
 import { 
   Search, 
   Star, 
-  Bug, 
   ExternalLink,
   Target,
   Users,
-  TrendingUp,
   Flame,
-  Filter
+  Filter,
+  Sparkles
 } from "lucide-react";
+import Link from "next/link";
 
 interface Project {
   name: string;
@@ -25,23 +28,25 @@ interface Project {
   url: string;
 }
 
-interface Contributor {
-  username: string;
-  name: string;
-  avatar_url: string;
-  followers: number;
-  public_repos: number;
-  score: number;
-  matching_languages: string[];
-}
-
 type Tab = "projects" | "contributors" | "hot";
+
+const containerVariants = {
+  hidden: { opacity: 0 },
+  visible: {
+    opacity: 1,
+    transition: { staggerChildren: 0.05 }
+  }
+};
+
+const itemVariants = {
+  hidden: { opacity: 0, y: 10 },
+  visible: { opacity: 1, y: 0, transition: { duration: 0.3 } }
+};
 
 export default function ExplorePage() {
   const [activeTab, setActiveTab] = useState<Tab>("projects");
   const [search, setSearch] = useState("");
   const [projects, setProjects] = useState<Project[]>([]);
-  const [contributors, setContributors] = useState<Contributor[]>([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -73,148 +78,191 @@ export default function ExplorePage() {
   ];
 
   return (
-    <div className="min-h-screen bg-muted/30">
+    <div className="min-h-screen">
       {/* Header */}
-      <div className="bg-background border-b">
-        <div className="container mx-auto px-4 py-8">
-          <h1 className="text-3xl font-bold">Explore</h1>
-          <p className="text-muted-foreground mt-1">
-            Discover projects and contributors that need you
-          </p>
-
-          {/* Search */}
-          <div className="mt-6 relative max-w-xl">
-            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-muted-foreground" />
-            <Input
-              placeholder="Search projects, languages, or contributors..."
-              value={search}
-              onChange={(e) => setSearch(e.target.value)}
-              className="pl-11 h-12"
-            />
-          </div>
-
-          {/* Tabs */}
-          <div className="flex gap-2 mt-6">
-            {tabs.map((tab) => (
-              <Button
-                key={tab.id}
-                variant={activeTab === tab.id ? "default" : "outline"}
-                onClick={() => setActiveTab(tab.id)}
-                className="gap-2"
-              >
-                <tab.icon className="h-4 w-4" />
-                {tab.label}
-              </Button>
-            ))}
+      <div className="sticky top-0 z-40 border-b bg-background/80 backdrop-blur-xl">
+        <div className="container mx-auto px-4 py-4 flex items-center justify-between">
+          <Link href="/" className="flex items-center gap-2">
+            <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-violet-500 to-cyan-500 flex items-center justify-center">
+              <Sparkles className="w-4 h-4 text-white" />
+            </div>
+            <span className="font-bold">OSS Marketplace</span>
+          </Link>
+          <div className="flex items-center gap-4">
+            <Link href="/login">
+              <Button variant="glow" size="sm">Sign In</Button>
+            </Link>
+            <ThemeToggle />
           </div>
         </div>
       </div>
 
       {/* Content */}
       <div className="container mx-auto px-4 py-8">
-        {activeTab === "projects" && (
-          <>
-            <h2 className="text-xl font-semibold mb-4">Popular Projects</h2>
-            {loading ? (
-              <div className="text-center py-12 text-muted-foreground">
-                Loading projects...
-              </div>
-            ) : projects.length === 0 ? (
-              <Card>
-                <CardContent className="py-12 text-center">
-                  <p className="text-muted-foreground mb-4">
-                    No projects found. Try a different search.
-                  </p>
-                  <Button onClick={fetchData}>Refresh</Button>
-                </CardContent>
-              </Card>
-            ) : (
-              <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-                {projects.map((project, index) => (
-                  <Card key={project.name || index} className="hover:border-primary/50 transition-colors">
-                    <CardHeader>
-                      <div className="flex items-start justify-between">
-                        <div className="flex-1 min-w-0">
-                          <CardTitle className="text-lg truncate">
-                            {project.name}
-                          </CardTitle>
-                          <CardDescription className="line-clamp-2 mt-1">
-                            {project.description || "No description"}
-                          </CardDescription>
+        {/* Hero */}
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          className="mb-12 text-center"
+        >
+          <h1 className="text-4xl md:text-5xl font-bold mb-4">
+            Explore <span className="gradient-text">Projects</span>
+          </h1>
+          <p className="text-muted-foreground text-lg max-w-2xl mx-auto">
+            Discover open source projects and find your perfect match based on skills, interests, and goals.
+          </p>
+        </motion.div>
+
+        {/* Search */}
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.1 }}
+          className="relative max-w-xl mx-auto mb-8"
+        >
+          <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 h-5 w-5 text-muted-foreground" />
+          <Input
+            placeholder="Search projects, languages, or contributors..."
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+            className="pl-12 h-14 text-base bg-card/50 backdrop-blur-sm border-border/50 focus:border-violet-500/50 focus:ring-violet-500/20"
+          />
+        </motion.div>
+
+        {/* Tabs */}
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.2 }}
+          className="flex gap-2 mb-8 justify-center"
+        >
+          {tabs.map((tab) => (
+            <Button
+              key={tab.id}
+              variant={activeTab === tab.id ? "glow" : "outline"}
+              onClick={() => setActiveTab(tab.id)}
+              className="gap-2"
+            >
+              <tab.icon className="h-4 w-4" />
+              {tab.label}
+            </Button>
+          ))}
+        </motion.div>
+
+        {/* Grid */}
+        <motion.div
+          variants={containerVariants}
+          initial="hidden"
+          animate={loading ? "hidden" : "visible"}
+          className="grid gap-6 md:grid-cols-2 lg:grid-cols-3"
+        >
+          {activeTab === "projects" && (
+            <>
+              {loading ? (
+                <>
+                  <SkeletonCard />
+                  <SkeletonCard />
+                  <SkeletonCard />
+                  <SkeletonCard />
+                  <SkeletonCard />
+                  <SkeletonCard />
+                </>
+              ) : projects.length === 0 ? (
+                <Card className="col-span-full">
+                  <CardContent className="py-16 text-center">
+                    <div className="w-16 h-16 rounded-2xl bg-muted mx-auto mb-4 flex items-center justify-center">
+                      <Search className="h-8 w-8 text-muted-foreground" />
+                    </div>
+                    <p className="text-muted-foreground mb-4">
+                      No projects found. Try a different search.
+                    </p>
+                    <Button onClick={fetchData}>Refresh</Button>
+                  </CardContent>
+                </Card>
+              ) : (
+                projects.map((project, index) => (
+                  <motion.div key={project.name || index} variants={itemVariants}>
+                    <Card hover className="h-full group">
+                      <CardHeader>
+                        <div className="flex items-start justify-between gap-2">
+                          <div className="flex-1 min-w-0">
+                            <CardTitle className="text-lg truncate group-hover:text-violet-400 transition-colors">
+                              {project.name}
+                            </CardTitle>
+                            <CardDescription className="line-clamp-2 mt-1">
+                              {project.description || "No description"}
+                            </CardDescription>
+                          </div>
+                          <Badge variant="gradient" className="flex-shrink-0">
+                            {project.language || "Mixed"}
+                          </Badge>
                         </div>
-                        <Badge variant="secondary">
-                          {project.language || "Mixed"}
-                        </Badge>
-                      </div>
-                    </CardHeader>
-                    <CardContent>
-                      <div className="flex items-center justify-between">
-                        <div className="flex items-center gap-4 text-sm text-muted-foreground">
-                          <span className="flex items-center gap-1">
-                            <Star className="h-4 w-4" /> 
-                            {project.stars?.toLocaleString() || 0}
-                          </span>
-                        </div>
-                        <div className="flex gap-2">
-                          <a href={project.url || "#"} target="_blank" rel="noopener noreferrer">
-                            <Button variant="outline" size="sm" className="gap-1">
-                              <ExternalLink className="h-4 w-4" />
+                      </CardHeader>
+                      <CardContent>
+                        <div className="flex items-center justify-between">
+                          <div className="flex items-center gap-4 text-sm text-muted-foreground">
+                            <span className="flex items-center gap-1">
+                              <Star className="h-4 w-4 text-yellow-500 fill-yellow-500" /> 
+                              {project.stars?.toLocaleString() || 0}
+                            </span>
+                          </div>
+                          <div className="flex gap-2">
+                            <a href={project.url || "#"} target="_blank" rel="noopener noreferrer">
+                              <Button variant="ghost" size="icon" className="opacity-0 group-hover:opacity-100 transition-opacity">
+                                <ExternalLink className="h-4 w-4" />
+                              </Button>
+                            </a>
+                            <Button size="sm" className="gap-1">
+                              <Target className="h-4 w-4" />
+                              Match
                             </Button>
-                          </a>
-                          <Button size="sm" className="gap-1">
-                            <Target className="h-4 w-4" />
-                            Match
-                          </Button>
+                          </div>
                         </div>
-                      </div>
-                    </CardContent>
-                  </Card>
-                ))}
-              </div>
-            )}
-          </>
-        )}
+                      </CardContent>
+                    </Card>
+                  </motion.div>
+                ))
+              )}
+            </>
+          )}
 
-        {activeTab === "contributors" && (
-          <>
-            <h2 className="text-xl font-semibold mb-4">Top Contributors</h2>
-            <Card>
-              <CardContent className="py-12 text-center">
-                <Users className="h-12 w-12 mx-auto text-muted-foreground mb-4" />
-                <p className="text-muted-foreground mb-4">
-                  Contributor discovery coming soon! Connect your GitHub account to see personalized recommendations.
+          {activeTab === "contributors" && (
+            <Card className="col-span-full">
+              <CardContent className="py-16 text-center">
+                <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-violet-500/20 to-cyan-500/20 mx-auto mb-4 flex items-center justify-center">
+                  <Users className="h-8 w-8 text-violet-400" />
+                </div>
+                <h3 className="text-xl font-semibold mb-2">Contributor Discovery</h3>
+                <p className="text-muted-foreground mb-4 max-w-md mx-auto">
+                  Sign in to see personalized contributor recommendations based on your project needs.
                 </p>
-                <Button variant="outline">Sign in to see matches</Button>
+                <Link href="/login">
+                  <Button variant="glow">Sign in to Continue</Button>
+                </Link>
               </CardContent>
             </Card>
-          </>
-        )}
+          )}
 
-        {activeTab === "hot" && (
-          <>
-            <h2 className="text-xl font-semibold mb-4">Projects That Need Help</h2>
-            <Card className="border-orange-200 bg-orange-50/50">
-              <CardHeader>
-                <CardTitle className="flex items-center gap-2 text-orange-700">
-                  <Flame className="h-5 w-5" />
-                  Hot Projects
-                </CardTitle>
-                <CardDescription>
-                  These projects have high issue counts and need contributors
-                </CardDescription>
-              </CardHeader>
-              <CardContent>
-                <p className="text-muted-foreground">
-                  Sign in to see projects that are actively looking for help. Our AI matches you with projects based on your skills and interests.
+          {activeTab === "hot" && (
+            <Card className="col-span-full border-orange-500/20">
+              <CardContent className="py-16 text-center">
+                <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-orange-500/20 to-red-500/20 mx-auto mb-4 flex items-center justify-center">
+                  <Flame className="h-8 w-8 text-orange-400" />
+                </div>
+                <h3 className="text-xl font-semibold mb-2">Hot Projects</h3>
+                <p className="text-muted-foreground mb-4 max-w-md mx-auto">
+                  These projects have high issue counts and are actively looking for contributors.
                 </p>
-                <Button className="mt-4 gap-2">
-                  <Target className="h-4 w-4" />
-                  Find Your Match
-                </Button>
+                <Link href="/login">
+                  <Button variant="glow" className="gap-2">
+                    <Target className="h-4 w-4" />
+                    Find Your Match
+                  </Button>
+                </Link>
               </CardContent>
             </Card>
-          </>
-        )}
+          )}
+        </motion.div>
       </div>
     </div>
   );
