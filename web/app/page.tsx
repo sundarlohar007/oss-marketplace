@@ -76,7 +76,7 @@ export default function DashboardPage() {
                       <p className="text-xs text-zinc-500">Based on your skills</p>
                     </div>
                   </div>
-                  <Link href="/dashboard/matches">
+                  <Link href="/matches">
                     <Button variant="ghost" size="sm" className="text-zinc-400 hover:text-zinc-100 text-xs h-8">
                       View all
                     </Button>
@@ -168,13 +168,13 @@ export default function DashboardPage() {
                       Find Projects
                     </Button>
                   </Link>
-                  <Link href="/dashboard/profile">
+                  <Link href="/profile">
                     <Button variant="ghost" className="w-full justify-start h-11 text-zinc-300 hover:text-zinc-100 hover:bg-zinc-800">
                       <Users className="w-4 h-4 mr-3 text-cyan-400" />
                       Update Profile
                     </Button>
                   </Link>
-                  <Link href="/dashboard/projects">
+                  <Link href="/projects">
                     <Button variant="ghost" className="w-full justify-start h-11 text-zinc-300 hover:text-zinc-100 hover:bg-zinc-800">
                       <Plus className="w-4 h-4 mr-3 text-emerald-400" />
                       Add Project

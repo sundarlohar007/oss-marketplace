@@ -2,7 +2,7 @@
 
 import { Badge } from "@/components/ui/badge";
 import { Target, GitPullRequest, AlertCircle, Star, Clock, ChevronRight } from "lucide-react";
-import Link from "next/link";
+import { cn } from "@/lib/utils";
 
 interface ActivityItem {
   id: string;
@@ -44,8 +44,8 @@ export function ActivityFeed({ items, title = "Recent Activity" }: ActivityFeedP
               className="px-5 py-3 hover:bg-zinc-800/50 transition-colors cursor-pointer group"
             >
               <div className="flex items-start gap-3">
-                <div className={`w-8 h-8 rounded-full ${config.bg} flex items-center justify-center flex-shrink-0 mt-0.5`}>
-                  <Icon className={`w-4 h-4 ${config.text}`} />
+                <div className={cn("w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5", config.bg)}>
+                  <Icon className={cn("w-4 h-4", config.text)} />
                 </div>
                 <div className="flex-1 min-w-0">
                   <p className="text-sm text-zinc-300 group-hover:text-zinc-100">

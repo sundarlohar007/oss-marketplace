@@ -1,9 +1,10 @@
 "use client";
 
-import { Bell, Search, Plus } from "lucide-react";
+import { Bell, Search } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import Link from "next/link";
-import { ThemeToggle } from "@/components/theme-toggle";
+import { useTheme } from "next-themes";
+import { Moon, Sun } from "lucide-react";
+import { useEffect, useState } from "react";
 
 interface TopbarProps {
   title: string;
@@ -11,6 +12,13 @@ interface TopbarProps {
 }
 
 export function Topbar({ title, subtitle }: TopbarProps) {
+  const { theme, setTheme } = useTheme();
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+
   return (
     <header className="h-16 border-b border-zinc-800 bg-zinc-950 flex items-center justify-between px-6">
       {/* Left side */}
@@ -29,7 +37,16 @@ export function Topbar({ title, subtitle }: TopbarProps) {
           <span className="absolute top-2 right-2 w-1.5 h-1.5 bg-violet-500 rounded-full" />
         </Button>
         <div className="w-px h-5 bg-zinc-800 mx-1" />
-        <ThemeToggle />
+        {mounted && (
+          <Button
+            variant="ghost"
+            size="icon"
+            className="w-9 h-9 text-zinc-400 hover:text-zinc-100"
+            onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
+          >
+            {theme === "dark" ? <Sun className="w-4 h-4" /> : <Moon className="w-4 h-4" />}
+          </Button>
+        )}
       </div>
     </header>
   );

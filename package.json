@@ -3,11 +3,6 @@
   "version": "1.0.0",
   "description": "🌍 Match maintainers with perfect contributors",
   "private": true,
-  "workspaces": [
-    "cli",
-    "api",
-    "web"
-  ],
   "scripts": {
     "cli": "cd cli && python oss_profile.py",
     "api": "cd api && uvicorn api.main:app --reload",

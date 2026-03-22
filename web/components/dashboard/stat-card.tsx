@@ -1,6 +1,7 @@
 "use client";
 
-import { LucideIcon } from "lucide-react";
+import { cn } from "@/lib/utils";
+import { LucideIcon, TrendingUp, TrendingDown } from "lucide-react";
 
 interface StatCardProps {
   label: string;
@@ -36,16 +37,17 @@ export function StatCard({ label, value, change, changeType, icon: Icon, color }
   return (
     <div className="bg-zinc-900 border border-zinc-800 rounded-xl p-5 hover:border-zinc-700 transition-all cursor-pointer group">
       <div className="flex items-center justify-between mb-4">
-        <div className={`w-10 h-10 rounded-lg ${colors.bg} flex items-center justify-center`}>
-          <Icon className={`w-5 h-5 ${colors.icon}`} />
+        <div className={cn("w-10 h-10 rounded-lg flex items-center justify-center", colors.bg)}>
+          <Icon className={cn("w-5 h-5", colors.icon)} />
         </div>
-        <span className={`text-xs font-medium px-2 py-1 rounded-full ${
-          changeType === "positive" 
-            ? "bg-emerald-500/10 text-emerald-400" 
-            : changeType === "negative"
-            ? "bg-red-500/10 text-red-400"
-            : "bg-zinc-800 text-zinc-400"
-        }`}>
+        <span className={cn(
+          "text-xs font-medium px-2 py-1 rounded-full",
+          changeType === "positive" && "bg-emerald-500/10 text-emerald-400",
+          changeType === "negative" && "bg-red-500/10 text-red-400",
+          changeType === "neutral" && "bg-zinc-800 text-zinc-400"
+        )}>
+          {changeType === "positive" && <TrendingUp className="w-3 h-3 inline mr-1" />}
+          {changeType === "negative" && <TrendingDown className="w-3 h-3 inline mr-1" />}
           {change}
         </span>
       </div>

@@ -17,7 +17,7 @@ interface ProjectCardProps {
 
 export function ProjectCard({ name, stars, match, issues, language, description, trending }: ProjectCardProps) {
   return (
-    <Link href={`/dashboard/matches?repo=${encodeURIComponent(name)}`}>
+    <Link href={`/matches?repo=${encodeURIComponent(name)}`}>
       <div className="bg-zinc-900 border border-zinc-800 rounded-xl p-4 hover:border-zinc-700 hover:shadow-lg hover:scale-[1.02] transition-all cursor-pointer h-full">
         {/* Header */}
         <div className="flex items-center gap-2 mb-3">

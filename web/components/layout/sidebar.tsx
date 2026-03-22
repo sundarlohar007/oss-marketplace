@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import { cn } from "@/lib/utils";
 import { 
   Zap, 
   LayoutDashboard, 
@@ -16,8 +17,14 @@ import {
 const navItems = [
   { href: "/", label: "Dashboard", icon: LayoutDashboard },
   { href: "/explore", label: "Explore", icon: Search },
-  { href: "/dashboard/matches", label: "Matches", icon: Target },
-  { href: "/dashboard/projects", label: "Projects", icon: GitBranch },
+  { href: "/matches", label: "Matches", icon: Target },
+  { href: "/projects", label: "Projects", icon: GitBranch },
+];
+
+const settingsItems = [
+  { href: "/profile", label: "Profile", icon: Users },
+  { href: "/analytics", label: "Analytics", icon: BarChart3 },
+  { href: "/settings", label: "Settings", icon: Settings },
 ];
 
 export function Sidebar() {
@@ -46,13 +53,12 @@ export function Sidebar() {
               <Link
                 key={item.href}
                 href={item.href}
-                className={`
-                  flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-all
-                  ${isActive 
+                className={cn(
+                  "flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-all",
+                  isActive 
                     ? "bg-zinc-800 text-zinc-100" 
                     : "text-zinc-400 hover:text-zinc-100 hover:bg-zinc-900"
-                  }
-                `}
+                )}
               >
                 <item.icon className="w-4 h-4" />
                 {item.label}
@@ -65,27 +71,16 @@ export function Sidebar() {
         <div className="mt-8">
           <p className="text-xs font-medium text-zinc-600 uppercase tracking-wider px-3 mb-2">Settings</p>
           <div className="space-y-1">
-            <Link
-              href="/dashboard/profile"
-              className="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium text-zinc-400 hover:text-zinc-100 hover:bg-zinc-900 transition-all"
-            >
-              <Users className="w-4 h-4" />
-              Profile
-            </Link>
-            <Link
-              href="/dashboard/profile"
-              className="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium text-zinc-400 hover:text-zinc-100 hover:bg-zinc-900 transition-all"
-            >
-              <BarChart3 className="w-4 h-4" />
-              Analytics
-            </Link>
-            <Link
-              href="/dashboard/profile"
-              className="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium text-zinc-400 hover:text-zinc-100 hover:bg-zinc-900 transition-all"
-            >
-              <Settings className="w-4 h-4" />
-              Settings
-            </Link>
+            {settingsItems.map((item) => (
+              <Link
+                key={item.href}
+                href={item.href}
+                className="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium text-zinc-400 hover:text-zinc-100 hover:bg-zinc-900 transition-all"
+              >
+                <item.icon className="w-4 h-4" />
+                {item.label}
+              </Link>
+            ))}
           </div>
         </div>
       </nav>
