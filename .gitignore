@@ -28,6 +28,8 @@ node_modules/
 dist/
 build/
 *.egg-info/
+.next/
+
 
 # Test coverage
 .coverage
