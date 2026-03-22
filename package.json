@@ -1,0 +1,23 @@
+{
+  "name": "oss-marketplace",
+  "version": "1.0.0",
+  "description": "🌍 Match maintainers with perfect contributors",
+  "private": true,
+  "workspaces": [
+    "cli",
+    "api",
+    "web"
+  ],
+  "scripts": {
+    "cli": "cd cli && python oss_profile.py",
+    "api": "cd api && uvicorn api.main:app --reload",
+    "web": "cd web && npm run dev",
+    "dev": "concurrently \"npm run api\" \"npm run web\"",
+    "install:all": "cd cli && pip install -e . && cd ../api && pip install -r requirements.txt && cd ../web && npm install",
+    "test": "pytest",
+    "lint": "black . && flake8 ."
+  },
+  "devDependencies": {
+    "concurrently": "^8.2.2"
+  }
+}

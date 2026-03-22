@@ -1,0 +1,27 @@
+# Auto labeling rules
+# See: https://github.com/actions/labeler
+
+api:
+  - changed-files:
+      - any-glob-to-any-file: 'api/**/*'
+
+cli:
+  - changed-files:
+      - any-glob-to-any-file: 'cli/**/*'
+
+web:
+  - changed-files:
+      - any-glob-to-any-file: 'web/**/*'
+
+documentation:
+  - changed-files:
+      - any-glob-to-any-file:
+          - '**/*.md'
+          - 'docs/**/*'
+
+devops:
+  - changed-files:
+      - any-glob-to-any-file:
+          - '.github/**/*'
+          - 'docker/**/*'
+          - '**/Dockerfile*'
