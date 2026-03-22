@@ -4,81 +4,304 @@ import { motion } from "framer-motion";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Navbar, StatCard, MatchCard, ActivityFeed } from "@/components/dashboard";
+import { ThemeToggle } from "@/components/theme-toggle";
 import { 
+  Zap, 
   Target, 
   Code2, 
   AlertCircle, 
   Trophy,
+  Bell,
+  Settings,
   Search,
+  GitBranch,
+  Star,
+  ExternalLink,
+  ArrowRight,
+  Flame,
+  TrendingUp,
   Users,
   Plus,
-  ArrowRight,
-  TrendingUp,
-  Flame,
-  ChevronRight
+  ChevronRight,
+  GitPullRequest,
+  Clock,
+  CheckCircle2,
+  MessageSquare
 } from "lucide-react";
 
-const stats = [
-  { label: "Active Matches", value: "24", change: "+3", changeType: "positive" as const, icon: Target, color: "violet" as const },
-  { label: "Contributions", value: "156", change: "+12", changeType: "positive" as const, icon: Code2, color: "cyan" as const },
-  { label: "Open Issues", value: "47", change: "-5", changeType: "negative" as const, icon: AlertCircle, color: "emerald" as const },
-  { label: "Success Rate", value: "87%", change: "+5%", changeType: "positive" as const, icon: Trophy, color: "orange" as const },
-];
+// Reusable Card Component
+function Card({ children, className = "" }: { children: React.ReactNode; className?: string }) {
+  return (
+    <div className={`rounded-xl border border-white/5 bg-zinc-900/50 backdrop-blur-sm ${className}`}>
+      {children}
+    </div>
+  );
+}
 
-const matches = [
-  { name: "vercel/next.js", stars: "115k", match: 94, issues: 234, language: "TypeScript", description: "The React Framework for the Web", trending: true, new: false },
-  { name: "tailwindlabs/tailwindcss", stars: "78k", match: 89, issues: 89, language: "CSS", description: "A utility-first CSS framework", trending: true, new: false },
-  { name: "shadcn/ui", stars: "32k", match: 87, issues: 156, language: "TypeScript", description: "Beautiful components built with Radix UI", trending: false, new: true },
-  { name: "tanstack/query", stars: "22k", match: 82, issues: 67, language: "TypeScript", description: "Powerful asynchronous state management", trending: false, new: false },
-  { name: "microsoft/vscode", stars: "156k", match: 78, issues: 892, language: "TypeScript", description: "Open Source VSCode Editor", trending: false, new: false },
-  { name: "denoland/deno", stars: "94k", match: 75, issues: 234, language: "Rust", description: "A modern runtime for JavaScript and TypeScript", trending: false, new: false },
-];
+function CardHeader({ children, className = "" }: { children: React.ReactNode; className?: string }) {
+  return (
+    <div className={`px-5 py-4 border-b border-white/5 ${className}`}>
+      {children}
+    </div>
+  );
+}
 
-const activity = [
-  { id: "1", type: "match" as const, title: "New 94% match found", project: "vercel/next.js", time: "2 hours ago" },
-  { id: "2", type: "pr" as const, title: "Your PR was merged", project: "shadcn/ui", time: "5 hours ago" },
-  { id: "3", type: "issue" as const, title: "New good-first-issue assigned", project: "tanstack/query", time: "1 day ago" },
-  { id: "4", type: "star" as const, title: "You starred", project: "microsoft/vscode", time: "2 days ago" },
-  { id: "5", type: "merged" as const, title: "PR merged in", project: "tailwindcss", time: "3 days ago" },
-];
+function CardContent({ children, className = "" }: { children: React.ReactNode; className?: string }) {
+  return (
+    <div className={`p-5 ${className}`}>
+      {children}
+    </div>
+  );
+}
 
-const quickActions = [
-  { label: "Find Projects", icon: Search, href: "/explore", color: "violet" },
-  { label: "Update Profile", icon: Users, href: "/dashboard/profile", color: "cyan" },
-  { label: "Add Project", icon: Plus, href: "/dashboard/projects", color: "emerald" },
-];
+// Stat Card Component
+function StatCard({ 
+  label, 
+  value, 
+  change, 
+  changeType, 
+  icon: Icon,
+  color 
+}: { 
+  label: string; 
+  value: string; 
+  change: string; 
+  changeType: "positive" | "negative";
+  icon: any;
+  color: "violet" | "cyan" | "emerald" | "orange";
+}) {
+  const colorClasses = {
+    violet: "bg-violet-500/10 text-violet-400",
+    cyan: "bg-cyan-500/10 text-cyan-400",
+    emerald: "bg-emerald-500/10 text-emerald-400",
+    orange: "bg-orange-500/10 text-orange-400",
+  };
 
-const quickStats = [
-  { label: "Open PRs", value: "8", icon: TrendingUp, color: "emerald" },
-  { label: "Watched", value: "23", icon: Target, color: "violet" },
-  { label: "Following", value: "12", icon: Users, color: "cyan" },
-];
+  return (
+    <motion.div
+      whileHover={{ y: -2 }}
+      transition={{ duration: 0.2 }}
+    >
+      <Card className="p-5 hover:border-white/10 transition-colors cursor-pointer">
+        <div className="flex items-center justify-between mb-4">
+          <div className={`w-10 h-10 rounded-lg ${colorClasses[color]} flex items-center justify-center`}>
+            <Icon className="w-5 h-5" />
+          </div>
+          <Badge className={`text-xs ${
+            changeType === "positive" 
+              ? "bg-emerald-500/10 text-emerald-400 border-0" 
+              : "bg-red-500/10 text-red-400 border-0"
+          }`}>
+            {change}
+          </Badge>
+        </div>
+        <div className="text-3xl font-bold mb-1">{value}</div>
+        <div className="text-sm text-zinc-400">{label}</div>
+      </Card>
+    </motion.div>
+  );
+}
 
+// Match Card Component
+function MatchCard({ 
+  name, 
+  stars, 
+  match, 
+  issues, 
+  language,
+  description,
+  trending 
+}: { 
+  name: string; 
+  stars: string; 
+  match: number; 
+  issues: number; 
+  language: string;
+  description?: string;
+  trending?: boolean;
+}) {
+  return (
+    <motion.div
+      whileHover={{ y: -4, scale: 1.02 }}
+      transition={{ duration: 0.2 }}
+    >
+      <Link href={`/dashboard/matches?repo=${encodeURIComponent(name)}`}>
+        <Card className="p-5 hover:border-white/10 transition-all cursor-pointer h-full">
+          {/* Header */}
+          <div className="flex items-center gap-2 mb-3">
+            {trending && (
+              <Badge className="bg-orange-500/10 text-orange-400 border-0 text-xs">
+                <Flame className="w-3 h-3 mr-1" />
+                Trending
+              </Badge>
+            )}
+            <Badge variant="secondary" className="text-xs">
+              {language}
+            </Badge>
+          </div>
+          
+          {/* Title */}
+          <h3 className="font-semibold mb-1 flex items-center gap-2 group">
+            {name}
+            <ExternalLink className="w-3 h-3 opacity-0 group-hover:opacity-100 transition-opacity" />
+          </h3>
+          
+          {/* Description */}
+          {description && (
+            <p className="text-sm text-zinc-400 mb-4 line-clamp-2">{description}</p>
+          )}
+          
+          {/* Stats */}
+          <div className="flex items-center gap-4 mb-4 text-xs text-zinc-400">
+            <span className="flex items-center gap-1">
+              <Star className="w-3.5 h-3.5 text-yellow-500" />
+              {stars}
+            </span>
+            <span className="flex items-center gap-1">
+              <AlertCircle className="w-3.5 h-3.5" />
+              {issues} issues
+            </span>
+          </div>
+          
+          {/* Match Score */}
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-2">
+              <div className="text-2xl font-bold bg-gradient-to-r from-violet-500 to-cyan-500 bg-clip-text text-transparent">
+                {match}%
+              </div>
+              <span className="text-xs text-zinc-400">match</span>
+            </div>
+            <Button size="sm" className="bg-gradient-to-r from-violet-500 to-cyan-500 hover:from-violet-600 hover:to-cyan-600 opacity-0 group-hover:opacity-100 transition-opacity">
+              View
+            </Button>
+          </div>
+        </Card>
+      </Link>
+    </motion.div>
+  );
+}
+
+// Activity Item Component
+function ActivityItem({ 
+  type, 
+  title, 
+  project, 
+  time 
+}: { 
+  type: "match" | "pr" | "issue" | "star" | "merged";
+  title: string; 
+  project?: string; 
+  time: string;
+}) {
+  const config = {
+    match: { icon: Target, color: "violet" },
+    pr: { icon: GitPullRequest, color: "emerald" },
+    issue: { icon: AlertCircle, color: "cyan" },
+    star: { icon: Star, color: "yellow" },
+    merged: { icon: CheckCircle2, color: "violet" },
+  };
+
+  const { icon: Icon, color } = config[type];
+  const bgColor = `bg-${color}-500/10`;
+  const textColor = `text-${color}-400`;
+
+  return (
+    <div className="flex items-start gap-3 py-3 hover:bg-white/[0.02] transition-colors cursor-pointer group">
+      <div className={`w-8 h-8 rounded-full ${bgColor} flex items-center justify-center flex-shrink-0`}>
+        <Icon className={`w-4 h-4 ${textColor}`} />
+      </div>
+      <div className="flex-1 min-w-0">
+        <p className="text-sm">
+          <span className="group-hover:text-violet-400 transition-colors">{title}</span>
+          {project && <span className="text-zinc-400 ml-1">in {project}</span>}
+        </p>
+        <p className="text-xs text-zinc-500 flex items-center gap-1 mt-1">
+          <Clock className="w-3 h-3" />
+          {time}
+        </p>
+      </div>
+    </div>
+  );
+}
+
+// Main Dashboard Component
 export default function Dashboard() {
   return (
-    <div className="min-h-screen bg-background">
-      <Navbar />
+    <div className="min-h-screen bg-black">
+      {/* Navbar */}
+      <header className="sticky top-0 z-50 border-b border-white/5 bg-black/80 backdrop-blur-xl">
+        <div className="max-w-[1400px] mx-auto px-6">
+          <div className="flex h-14 items-center gap-2">
+            {/* Logo */}
+            <Link href="/" className="flex items-center gap-2.5 mr-4">
+              <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-violet-500 via-cyan-500 to-emerald-500 flex items-center justify-center">
+                <Zap className="w-4 h-4 text-white" />
+              </div>
+              <span className="font-semibold text-sm hidden sm:block">OSS Marketplace</span>
+            </Link>
 
-      <main className="p-6 max-w-[1600px] mx-auto">
-        {/* Welcome Section */}
+            {/* Navigation */}
+            <nav className="flex items-center gap-0.5 flex-1">
+              {[
+                { href: "/", label: "Dashboard", icon: Target },
+                { href: "/explore", label: "Explore", icon: Search },
+                { href: "/dashboard/matches", label: "Matches", icon: Target },
+                { href: "/dashboard/projects", label: "Projects", icon: GitBranch },
+              ].map((item, i) => (
+                <Link
+                  key={item.href}
+                  href={item.href}
+                  className={`flex items-center gap-2 px-3 py-1.5 rounded-md text-sm font-medium transition-all ${
+                    i === 0 
+                      ? "bg-white/10 text-white" 
+                      : "text-zinc-400 hover:text-white hover:bg-white/5"
+                  }`}
+                >
+                  <item.icon className="w-4 h-4" />
+                  <span className="hidden md:inline">{item.label}</span>
+                </Link>
+              ))}
+            </nav>
+
+            {/* Right Section */}
+            <div className="flex items-center gap-2">
+              <Button variant="ghost" size="icon" className="relative w-9 h-9">
+                <Bell className="w-4 h-4" />
+                <span className="absolute top-1.5 right-1.5 w-2 h-2 bg-violet-500 rounded-full animate-pulse" />
+              </Button>
+              <Button variant="ghost" size="icon" className="w-9 h-9">
+                <Settings className="w-4 h-4" />
+              </Button>
+              <div className="w-8 h-8 rounded-full bg-gradient-to-br from-violet-500 to-cyan-500 flex items-center justify-center text-white font-semibold text-xs">
+                A
+              </div>
+              <ThemeToggle />
+            </div>
+          </div>
+        </div>
+      </header>
+
+      {/* Main Content */}
+      <main className="max-w-[1400px] mx-auto px-6 py-8">
+        {/* Welcome */}
         <motion.div 
           className="mb-8"
           initial={{ opacity: 0, y: -20 }}
           animate={{ opacity: 1, y: 0 }}
         >
-          <h1 className="text-3xl font-bold mb-1">Welcome back, Alex</h1>
-          <p className="text-muted-foreground">Track your open source journey and discover new opportunities</p>
+          <h1 className="text-2xl font-bold mb-1">Welcome back, Alex</h1>
+          <p className="text-zinc-400">Track your open source journey</p>
         </motion.div>
 
         {/* Stats Grid */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
-          {stats.map((stat, i) => (
-            <StatCard key={stat.label} {...stat} />
-          ))}
+          <StatCard label="Active Matches" value="24" change="+3" changeType="positive" icon={Target} color="violet" />
+          <StatCard label="Contributions" value="156" change="+12" changeType="positive" icon={Code2} color="cyan" />
+          <StatCard label="Open Issues" value="47" change="-5" changeType="negative" icon={AlertCircle} color="emerald" />
+          <StatCard label="Success Rate" value="87%" change="+5%" changeType="positive" icon={Trophy} color="orange" />
         </div>
 
-        {/* Main Content Grid */}
+        {/* Main Grid */}
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
           {/* Left Column - Matches */}
           <div className="lg:col-span-2 space-y-6">
@@ -91,24 +314,25 @@ export default function Dashboard() {
               <div className="flex items-center justify-between mb-4">
                 <div className="flex items-center gap-3">
                   <div className="w-10 h-10 rounded-lg bg-violet-500/10 flex items-center justify-center">
-                    <Target className="w-5 h-5 text-violet-500" />
+                    <Target className="w-5 h-5 text-violet-400" />
                   </div>
                   <div>
                     <h2 className="text-lg font-semibold">Top Matches for You</h2>
-                    <p className="text-sm text-muted-foreground">Based on your skills and interests</p>
+                    <p className="text-sm text-zinc-400">Based on your skills</p>
                   </div>
                 </div>
                 <Link href="/dashboard/matches">
-                  <Button variant="ghost" size="sm" className="text-violet-500 hover:text-violet-400">
+                  <Button variant="ghost" size="sm" className="text-violet-400">
                     View All <ChevronRight className="w-4 h-4 ml-1" />
                   </Button>
                 </Link>
               </div>
 
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                {matches.slice(0, 4).map((match) => (
-                  <MatchCard key={match.name} {...match} />
-                ))}
+                <MatchCard name="vercel/next.js" stars="115k" match={94} issues={234} language="TypeScript" description="The React Framework for the Web" trending />
+                <MatchCard name="tailwindlabs/tailwindcss" stars="78k" match={89} issues={89} language="CSS" description="A utility-first CSS framework" />
+                <MatchCard name="shadcn/ui" stars="32k" match={87} issues={156} language="TypeScript" description="Beautiful components built with Radix UI" />
+                <MatchCard name="tanstack/query" stars="22k" match={82} issues={67} language="TypeScript" description="Powerful asynchronous state management" />
               </div>
             </motion.div>
 
@@ -121,83 +345,34 @@ export default function Dashboard() {
               <div className="flex items-center justify-between mb-4">
                 <div className="flex items-center gap-3">
                   <div className="w-10 h-10 rounded-lg bg-orange-500/10 flex items-center justify-center">
-                    <Flame className="w-5 h-5 text-orange-500" />
+                    <Flame className="w-5 h-5 text-orange-400" />
                   </div>
                   <div>
                     <h2 className="text-lg font-semibold">Trending Now</h2>
-                    <p className="text-sm text-muted-foreground">Hot projects this week</p>
+                    <p className="text-sm text-zinc-400">Hot this week</p>
                   </div>
                 </div>
               </div>
 
               <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                 {[
-                  { name: "v0", lang: "TypeScript", stars: "8.2k", match: 91 },
-                  { name: "cursor", lang: "TypeScript", stars: "12k", match: 88 },
-                  { name: "bolt.new", lang: "TypeScript", stars: "6.5k", match: 85 },
-                ].map((project, i) => (
-                  <motion.div
-                    key={project.name}
-                    initial={{ opacity: 0, y: 20 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ delay: 0.4 + i * 0.1 }}
-                    className="p-4 rounded-xl border border-white/5 bg-white/[0.02] backdrop-blur-sm hover:border-white/10 hover:bg-white/[0.04] transition-all cursor-pointer group"
-                  >
+                  { name: "v0", stars: "8.2k", match: 91 },
+                  { name: "cursor", stars: "12k", match: 88 },
+                  { name: "bolt.new", stars: "6.5k", match: 85 },
+                ].map((project) => (
+                  <Card key={project.name} className="p-4 hover:border-white/10 transition-colors cursor-pointer group">
                     <div className="flex items-center justify-between mb-2">
-                      <Badge variant="secondary" className="text-xs">{project.lang}</Badge>
-                      <span className="text-xs font-medium bg-gradient-to-r from-violet-500 to-cyan-500 bg-clip-text text-transparent">
+                      <Badge variant="secondary" className="text-xs">TypeScript</Badge>
+                      <span className="text-sm font-medium bg-gradient-to-r from-violet-500 to-cyan-500 bg-clip-text text-transparent">
                         {project.match}%
                       </span>
                     </div>
-                    <h3 className="font-semibold group-hover:text-violet-400 transition-colors mb-1">{project.name}</h3>
-                    <span className="text-xs text-muted-foreground flex items-center gap-1">
-                      <Flame className="w-3 h-3 text-yellow-500" />
-                      {project.stars} stars
+                    <h3 className="font-semibold mb-1 group-hover:text-violet-400 transition-colors">{project.name}</h3>
+                    <span className="text-xs text-zinc-400 flex items-center gap-1">
+                      <Star className="w-3 h-3 text-yellow-500" />
+                      {project.stars}
                     </span>
-                  </motion.div>
-                ))}
-              </div>
-            </motion.div>
-
-            {/* Your Stats */}
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.4 }}
-            >
-              <div className="flex items-center justify-between mb-4">
-                <div className="flex items-center gap-3">
-                  <div className="w-10 h-10 rounded-lg bg-cyan-500/10 flex items-center justify-center">
-                    <TrendingUp className="w-5 h-5 text-cyan-500" />
-                  </div>
-                  <div>
-                    <h2 className="text-lg font-semibold">Your GitHub Stats</h2>
-                    <p className="text-sm text-muted-foreground">Activity overview</p>
-                  </div>
-                </div>
-              </div>
-
-              <div className="grid grid-cols-3 gap-4">
-                {quickStats.map((stat, i) => (
-                  <motion.div
-                    key={stat.label}
-                    initial={{ opacity: 0, scale: 0.95 }}
-                    animate={{ opacity: 1, scale: 1 }}
-                    transition={{ delay: 0.5 + i * 0.1 }}
-                    className="p-4 rounded-xl border border-white/5 bg-white/[0.02] backdrop-blur-sm hover:bg-white/[0.04] transition-all text-center cursor-pointer group"
-                  >
-                    <div className={`w-10 h-10 rounded-lg mx-auto mb-3 flex items-center justify-center ${
-                      stat.color === 'violet' ? 'bg-violet-500/10' :
-                      stat.color === 'cyan' ? 'bg-cyan-500/10' : 'bg-emerald-500/10'
-                    }`}>
-                      <stat.icon className={`w-5 h-5 ${
-                        stat.color === 'violet' ? 'text-violet-500' :
-                        stat.color === 'cyan' ? 'text-cyan-500' : 'text-emerald-500'
-                      }`} />
-                    </div>
-                    <div className="text-2xl font-bold mb-1">{stat.value}</div>
-                    <div className="text-xs text-muted-foreground">{stat.label}</div>
-                  </motion.div>
+                  </Card>
                 ))}
               </div>
             </motion.div>
@@ -211,29 +386,34 @@ export default function Dashboard() {
               animate={{ opacity: 1, x: 0 }}
               transition={{ delay: 0.2 }}
             >
-              <div className="rounded-xl border border-white/5 bg-white/[0.02] backdrop-blur-sm p-4">
-                <h3 className="text-sm font-semibold mb-3 flex items-center gap-2">
-                  <Flame className="w-4 h-4 text-violet-500" />
-                  Quick Actions
-                </h3>
-                <div className="space-y-2">
-                  {quickActions.map((action) => (
-                    <Link key={action.label} href={action.href}>
-                      <Button 
-                        variant="outline" 
-                        className="w-full justify-start gap-3 h-11 group"
-                      >
-                        <action.icon className={`w-5 h-5 ${
-                          action.color === 'violet' ? 'text-violet-500' :
-                          action.color === 'cyan' ? 'text-cyan-500' : 'text-emerald-500'
-                        }`} />
-                        {action.label}
-                        <ArrowRight className="w-4 h-4 ml-auto opacity-0 group-hover:opacity-100 transition-opacity" />
-                      </Button>
-                    </Link>
-                  ))}
-                </div>
-              </div>
+              <Card>
+                <CardHeader>
+                  <h3 className="text-sm font-semibold">Quick Actions</h3>
+                </CardHeader>
+                <CardContent className="space-y-2">
+                  <Link href="/explore">
+                    <Button variant="outline" className="w-full justify-start gap-3 h-11 group">
+                      <Search className="w-5 h-5 text-violet-400" />
+                      Find Projects
+                      <ArrowRight className="w-4 h-4 ml-auto opacity-0 group-hover:opacity-100 transition-opacity" />
+                    </Button>
+                  </Link>
+                  <Link href="/dashboard/profile">
+                    <Button variant="outline" className="w-full justify-start gap-3 h-11 group">
+                      <Users className="w-5 h-5 text-cyan-400" />
+                      Update Profile
+                      <ArrowRight className="w-4 h-4 ml-auto opacity-0 group-hover:opacity-100 transition-opacity" />
+                    </Button>
+                  </Link>
+                  <Link href="/dashboard/projects">
+                    <Button variant="outline" className="w-full justify-start gap-3 h-11 group">
+                      <Plus className="w-5 h-5 text-emerald-400" />
+                      Add Project
+                      <ArrowRight className="w-4 h-4 ml-auto opacity-0 group-hover:opacity-100 transition-opacity" />
+                    </Button>
+                  </Link>
+                </CardContent>
+              </Card>
             </motion.div>
 
             {/* Activity Feed */}
@@ -242,7 +422,20 @@ export default function Dashboard() {
               animate={{ opacity: 1, x: 0 }}
               transition={{ delay: 0.3 }}
             >
-              <ActivityFeed items={activity} />
+              <Card>
+                <CardHeader className="flex flex-row items-center justify-between">
+                  <h3 className="text-sm font-semibold">Recent Activity</h3>
+                  <Badge className="bg-violet-500/10 text-violet-400 border-0 text-xs">4 new</Badge>
+                </CardHeader>
+                <div className="divide-y divide-white/5">
+                  <div className="px-5">
+                    <ActivityItem type="match" title="New 94% match found" project="vercel/next.js" time="2 hours ago" />
+                    <ActivityItem type="pr" title="Your PR was merged" project="shadcn/ui" time="5 hours ago" />
+                    <ActivityItem type="issue" title="New good-first-issue" project="tanstack/query" time="1 day ago" />
+                    <ActivityItem type="star" title="You starred" project="microsoft/vscode" time="2 days ago" />
+                  </div>
+                </div>
+              </Card>
             </motion.div>
 
             {/* Top Contributors */}
@@ -251,31 +444,30 @@ export default function Dashboard() {
               animate={{ opacity: 1, x: 0 }}
               transition={{ delay: 0.4 }}
             >
-              <div className="rounded-xl border border-white/5 bg-white/[0.02] backdrop-blur-sm overflow-hidden">
-                <div className="px-4 py-3 border-b border-white/5 bg-white/[0.02]">
+              <Card>
+                <CardHeader>
                   <h3 className="text-sm font-semibold">Top Contributors</h3>
-                </div>
+                </CardHeader>
                 <div className="divide-y divide-white/5">
                   {[
                     { name: "Sarah Chen", contributions: 234, avatar: "S" },
                     { name: "Alex Kim", contributions: 189, avatar: "A" },
                     { name: "Jordan Lee", contributions: 156, avatar: "J" },
-                  ].map((user, i) => (
-                    <div key={user.name} className="px-4 py-3 hover:bg-white/[0.02] transition-colors cursor-pointer group">
+                  ].map((user) => (
+                    <div key={user.name} className="px-5 py-3 hover:bg-white/[0.02] transition-colors cursor-pointer group">
                       <div className="flex items-center gap-3">
                         <div className="w-8 h-8 rounded-full bg-gradient-to-br from-violet-500 to-cyan-500 flex items-center justify-center text-white font-semibold text-xs">
                           {user.avatar}
                         </div>
                         <div className="flex-1 min-w-0">
                           <p className="text-sm font-medium group-hover:text-violet-400 transition-colors">{user.name}</p>
-                          <p className="text-xs text-muted-foreground">{user.contributions} contributions</p>
+                          <p className="text-xs text-zinc-400">{user.contributions} contributions</p>
                         </div>
-                        <Badge variant="secondary" className="text-xs">#{i + 1}</Badge>
                       </div>
                     </div>
                   ))}
                 </div>
-              </div>
+              </Card>
             </motion.div>
           </div>
         </div>
