@@ -1,10 +1,11 @@
 # 🌍 OSS Maintenance Marketplace
 
-> **Match. Connect. Build Together.**
+> **Match. Connect. Build Together.** The intelligent matchmaking platform for open source maintainers and contributors.
 
-![Stars](https://img.shields.io/github/stars/sundarlohar007/oss-marketplace?style=flat)
-![Python](https://img.shields.io/badge/Python-3.11+-blue)
-![License](https://img.shields.io/badge/License-MIT-green)
+[![Stars](https://img.shields.io/github/stars/sundarlohar007/oss-marketplace?style=flat)](https://github.com/sundarlohar007/oss-marketplace/stargazers)
+[![Python](https://img.shields.io/badge/Python-3.11+-blue)](https://python.org)
+[![Next.js](https://img.shields.io/badge/Next.js-14-black)](https://nextjs.org/)
+[![License](https://img.shields.io/badge/License-MIT-green)](LICENSE)
 
 ## The Problem
 
@@ -16,7 +17,7 @@
 ║  MAINTAINERS                           CONTRIBUTORS                      ║
 ║  ──────────────                        ────────────                      ║
 ║  • 847 issues, 0 help                  • "I want to contribute"         ║
-║  • Burned out, doing it alone           • "Where do I even start?"       ║
+║  • Burned out, doing it alone          • "Where do I even start?"       ║
 ║  • PRs that don't fit the project       • "My PR got closed, no feedback" ║
 ║  • No time to onboard newcomers         • "I don't know what they need"  ║
 ║                                                                          ║
@@ -39,134 +40,135 @@
 └─────────────────┘         └──────────────────┘         └─────────────────┘
 ```
 
-## ✨ Features
+---
 
-### For Maintainers
-- 🔍 **Contributor Discovery** — Find developers who match your project's exact needs
-- 📊 **Project Health Dashboard** — Burnout detection, stale issue alerts, response metrics
-- 🤖 **AI Issue Generator** — Auto-generate beginner-friendly issues from your codebase
-- 💌 **Smart Outreach** — Personalized invitation messages to potential contributors
-- 📈 **Contribution Pipeline** — Track contributors from first interest → first PR → regular
+## 🚀 Quick Start (3 Ways to Use)
 
-### For Contributors
-- 🎯 **Perfect Match Finder** — Find projects that match your skills, interests, and schedule
-- 🧬 **Contributor DNA** — AI-analyzed profile of your coding style, strengths, and preferences
-- 🏆 **OSS Resume** — Build a verified contribution history that stands out
-- 🎓 **Learning Paths** — Get matched to projects that help you grow
-- 💼 **Portfolio Builder** — Turn contributions into a public showcase
+### Option 1: Web Dashboard (Recommended for Beginners)
 
-## 🚀 Quick Start
-
-### Install the CLI
+The easiest way to get started with a beautiful, pre-built UI.
 
 ```bash
-# Clone the repository
-git clone https://github.com/sundarlohar007/oss-marketplace.git
+# 1. Navigate to web folder
+cd oss-marketplace/web
+
+# 2. Install dependencies
+npm install
+
+# 3. Start the dashboard
+npm run dev
+```
+
+Open **http://localhost:3000** in your browser.
+
+> **That's it!** The dashboard is fully functional and shows sample data. No setup required.
+
+### Option 2: CLI Tools (For Developers)
+
+Command-line tools for power users and automation.
+
+```bash
+# From the root directory
 cd oss-marketplace
 
-# Install CLI tool (macOS/Linux)
-./cli/install.sh
+# Find your GitHub profile matches
+python -m cli.oss_match find --contributor your-username
 
-# Install CLI tool (Windows PowerShell)
-.\cli\install.ps1
+# Generate your contributor DNA
+python -m cli.oss_profile create --github your-username
 
-# Or install via pip
-pip install ./cli
+# Analyze a project's health
+python -m cli.oss_health check --owner owner --repo repository
 ```
 
-### Find Your Perfect Match (30 seconds)
+### Option 3: API Server (For Developers)
+
+Run the full API server locally.
 
 ```bash
-# 1. Generate your Contributor DNA
-python cli/oss_profile.py create --github your-username
-
-# 2. Discover matching projects for a contributor
-python cli/oss_match.py find --contributor your-username
-
-# 3. Analyze project health
-python cli/oss_health.py --owner owner --repo repository
+cd oss-marketplace/api
+pip install -r requirements.txt
+python -m uvicorn api.main:app --reload
 ```
 
-### Example Output
+API available at **http://localhost:8000**
 
-```
-🎯 Found 5 Perfect Matches for you!
+---
 
-┌─────────────────────────────────────────────────────────────────┐
-│ 1. facebook/react                                               │
-│    📊 Health: 78%  🔥 Match: 94%  🐛 Good first issues: 12      │
-│    💬 "Looking for: React hooks expertise, TypeScript"         │
-│    ➜ github.com/facebook/react                                 │
-├─────────────────────────────────────────────────────────────────┤
-│ 2. vercel/next.js                                               │
-│    📊 Health: 82%  🔥 Match: 91%  🐛 Good first issues: 8       │
-│    💬 "Looking for: SSR experience, documentation help"         │
-│    ➜ github.com/vercel/next.js                                 │
-└─────────────────────────────────────────────────────────────────┘
-```
+## ✨ Features
 
-## 🏗️ Architecture
+### 🌐 Web Dashboard
+- **Premium Dark UI** — Beautiful zinc-950 dark theme with violet-cyan-emerald accents
+- **Real-time Stats** — View project metrics, activity feeds, and health scores
+- **Easy Navigation** — Sidebar layout with 7 fully functional pages
+- **Responsive Design** — Works on desktop and mobile
+
+### 📊 CLI Tools
+| Tool | Purpose |
+|------|---------|
+| `oss_match` | Find projects matching your skills and interests |
+| `oss_profile` | Generate your contributor DNA profile |
+| `oss_health` | Analyze any project's health and maintenance status |
+
+### 🧠 Matching Engine
+- **Skill Matching** — Match by programming languages, frameworks, tools
+- **Interest Fit** — Based on README analysis and contribution patterns
+- **Activity Level** — Weekly commit frequency, response times, timezone overlap
+- **Culture Score** — Communication style, documentation quality, community involvement
+
+---
+
+## 📁 Project Structure
 
 ```
 oss-marketplace/
-├── cli/                    # Command-line interface tool
-│   ├── oss-profile/        # Contributor DNA generator
-│   ├── oss-match/         # Matching engine CLI
-│   └── oss-health/         # Project health checker
+├── web/                    # Next.js 14 Dashboard
+│   ├── app/               # App router pages
+│   │   ├── page.tsx       # Dashboard home
+│   │   ├── explore/       # Project discovery
+│   │   ├── matches/       # Your matches
+│   │   ├── projects/      # Your projects
+│   │   ├── profile/       # User profile
+│   │   ├── analytics/     # Activity insights
+│   │   └── settings/      # Settings page
+│   ├── components/        # Reusable components
+│   │   ├── layout/        # Sidebar, Topbar
+│   │   ├── dashboard/     # Stat cards, project cards
+│   │   └── ui/            # Button, Badge components
+│   └── lib/               # Utilities
 │
-├── api/                    # Backend API (FastAPI)
-│   ├── routes/
-│   │   ├── profiles/       # Contributor profile endpoints
-│   │   ├── projects/       # Project/matching endpoints
-│   │   └── health/         # Health check endpoints
-│   ├── services/
-│   │   ├── matcher/        # Core matching algorithm
-│   │   ├── analyzer/       # Code analysis service
-│   │   └── scorer/         # Health scoring engine
-│   └── models/             # Database models
+├── cli/                    # Python CLI Tools
+│   ├── oss_profile.py     # Contributor DNA generator
+│   ├── oss_match.py       # Project matching
+│   └── oss_health.py      # Project health analyzer
 │
-├── web/                    # Dashboard (Next.js 15)
-│   ├── app/
-│   │   ├── (auth)/         # Authentication pages
-│   │   ├── dashboard/      # Main user dashboard
-│   │   └── explore/        # Project/contributor discovery
-│   └── components/
+├── api/                    # FastAPI Backend
+│   ├── routes/            # API endpoints
+│   ├── services/           # Business logic
+│   └── models/            # Database models
 │
-└── docs/                   # Documentation
-    ├── api-reference/       # API documentation
-    ├── guides/             # User guides
-    └── contributing.md     # Dev contribution guide
+├── docs/                   # Documentation
+├── tests/                  # Test suite
+└── scripts/                # Helper scripts
 ```
 
-## 📊 How Matching Works
+---
 
-```
-Matching Score = (Skill × 30%) + (Interest × 25%) + (Activity × 25%) + (Culture × 20%)
+## 🎨 Dashboard Preview
 
-Skill Match:
-├── Language overlap (Python ↔ Python = high)
-├── Framework experience (React ↔ React = high)
-├── Code complexity level
-└── Years of experience in domain
+The web dashboard includes:
 
-Interest Match:
-├── README language analysis
-├── Issue comment patterns
-├── Project topic tags
-└── Historical contribution patterns
+| Page | Description |
+|------|-------------|
+| **Dashboard** | Overview with stats, recent activity, and quick actions |
+| **Explore** | Discover new projects and contributors |
+| **Matches** | View your personalized project matches |
+| **Projects** | Manage your contributed projects |
+| **Profile** | View and edit your contributor profile |
+| **Analytics** | Activity insights and contribution metrics |
+| **Settings** | Theme, notifications, privacy, API keys |
 
-Activity Match:
-├── Weekly commit frequency
-├── Response time
-├── Timezone overlap
-└── Availability windows
-
-Culture Match:
-├── Communication style (issues vs PRs)
-├── Documentation quality
-├── Code review participation
-└── Community involvement signals
-```
+---
 
 ## 💚 Pricing
 
@@ -174,56 +176,73 @@ Culture Match:
 
 | Feature | Free |
 |---------|------|
-| Contributor Profile | ✅ Unlimited |
+| Web Dashboard | ✅ Unlimited |
+| CLI Tools | ✅ Unlimited |
 | Project Matches | ✅ Unlimited |
-| AI Issue Generator | ✅ Unlimited |
-| Health Dashboard | ✅ Full Access |
 | API Access | ✅ Unlimited |
 | Team Management | ✅ Free |
 | Priority Support | ✅ Community |
 
-## 🤔 Why This Exists
+---
 
-We got tired of seeing:
-- Maintainers give up because they can't find help
-- Good developers want to contribute but can't find where
-- Perfect matches that never happen because nobody knew
+## 🛠️ Troubleshooting
 
-This is our attempt to solve it — for free, forever.
+### Web Dashboard Issues
+
+**Dependencies fail to install?**
+```bash
+cd oss-marketplace/web
+rm -rf node_modules package-lock.json
+npm install
+```
+
+**Port 3000 is already in use?**
+```bash
+# Use a different port
+npm run dev -- -p 3001
+```
+
+### CLI Tool Issues
+
+**Python module not found?**
+```bash
+# Install CLI dependencies
+pip install requests pygithub
+
+# Or run from root directory
+cd oss-marketplace
+python -m cli.oss_match find --contributor your-username
+```
+
+**GitHub API rate limit?**
+- Unauthenticated: 60 requests/hour
+- With GitHub token: 5,000 requests/hour
+
+Create a token at: https://github.com/settings/tokens
+
+---
 
 ## 🤝 Contributing
 
-We're building this in the open. Contributions welcome!
+Contributions welcome! See [CONTRIBUTING.md](CONTRIBUTING.md) for guidelines.
 
 ```bash
-# Clone the repo
-git clone https://github.com/sundarlohar007/oss-marketplace.git
-
-# Setup development environment
+# Fork and clone
+git clone https://github.com/YOUR-USERNAME/oss-marketplace.git
 cd oss-marketplace
-./scripts/setup.sh
 
-# Run the CLI locally
-cd cli && pip install -e .
-oss-profile create --github octocat
+# Create a feature branch
+git checkout -b feature/amazing-feature
 
-# Run the API locally
-cd ../api && pip install -r requirements.txt
-uvicorn api.main:app --reload
+# Make your changes and commit
+git add .
+git commit -m "Add amazing feature"
 
-# Run the web dashboard
-cd ../web && npm install
-npm run dev
+# Push and create PR
+git push origin feature/amazing-feature
 ```
 
-See [CONTRIBUTING.md](CONTRIBUTING.md) for full guidelines.
-
-## 📢 Community
-
-- 💬 [Discord Server](https://discord.gg/oss-marketplace)
-- 🐦 [Twitter/X](https://twitter.com/oss_marketplace)
-- 📝 [Dev.to Blog](https://dev.to/oss-marketplace)
-- 🐛 [Issue Tracker](https://github.com/sundarlohar007/oss-marketplace/issues)
+---
 
 ## 📄 License
 
