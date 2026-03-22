@@ -2,110 +2,63 @@
 
 import { motion } from "framer-motion";
 import Link from "next/link";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
-import { ThemeToggle } from "@/components/theme-toggle";
 import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
+import { Navbar, StatCard, MatchCard, ActivityFeed } from "@/components/dashboard";
 import { 
-  Search, 
-  Users, 
-  GitBranch, 
-  TrendingUp, 
-  Bell,
-  Settings,
+  Target, 
+  Code2, 
+  AlertCircle, 
+  Trophy,
+  Search,
+  Users,
   Plus,
   ArrowRight,
-  Star,
-  Code2,
-  Target,
-  Zap,
-  MessageSquare,
-  ExternalLink,
-  Activity,
-  ChevronRight,
-  GitPullRequest,
-  AlertCircle,
+  TrendingUp,
   Flame,
-  Trophy,
-  Clock,
-  CheckCircle2,
-  XCircle,
-  Eye
+  ChevronRight
 } from "lucide-react";
 
 const stats = [
-  { label: "Active Matches", value: "24", change: "+3", icon: Target, color: "violet" },
-  { label: "Total Contributions", value: "156", change: "+12", icon: Code2, color: "cyan" },
-  { label: "Open Issues", value: "47", change: "-5", icon: AlertCircle, color: "emerald" },
-  { label: "Success Rate", value: "87%", change: "+5%", icon: Trophy, color: "violet" },
+  { label: "Active Matches", value: "24", change: "+3", changeType: "positive" as const, icon: Target, color: "violet" as const },
+  { label: "Contributions", value: "156", change: "+12", changeType: "positive" as const, icon: Code2, color: "cyan" as const },
+  { label: "Open Issues", value: "47", change: "-5", changeType: "negative" as const, icon: AlertCircle, color: "emerald" as const },
+  { label: "Success Rate", value: "87%", change: "+5%", changeType: "positive" as const, icon: Trophy, color: "orange" as const },
 ];
 
-const topMatches = [
-  { name: "vercel/next.js", stars: "115k", match: 94, issues: 234, lang: "TypeScript", trending: true },
-  { name: "tailwindlabs/tailwindcss", stars: "78k", match: 89, issues: 89, lang: "CSS", trending: false },
-  { name: "shadcn/ui", stars: "32k", match: 87, issues: 156, lang: "TypeScript", trending: true },
-  { name: "tanstack/query", stars: "22k", match: 82, issues: 67, lang: "TypeScript", trending: false },
+const matches = [
+  { name: "vercel/next.js", stars: "115k", match: 94, issues: 234, language: "TypeScript", description: "The React Framework for the Web", trending: true, new: false },
+  { name: "tailwindlabs/tailwindcss", stars: "78k", match: 89, issues: 89, language: "CSS", description: "A utility-first CSS framework", trending: true, new: false },
+  { name: "shadcn/ui", stars: "32k", match: 87, issues: 156, language: "TypeScript", description: "Beautiful components built with Radix UI", trending: false, new: true },
+  { name: "tanstack/query", stars: "22k", match: 82, issues: 67, language: "TypeScript", description: "Powerful asynchronous state management", trending: false, new: false },
+  { name: "microsoft/vscode", stars: "156k", match: 78, issues: 892, language: "TypeScript", description: "Open Source VSCode Editor", trending: false, new: false },
+  { name: "denoland/deno", stars: "94k", match: 75, issues: 234, language: "Rust", description: "A modern runtime for JavaScript and TypeScript", trending: false, new: false },
 ];
 
-const recentActivity = [
-  { type: "match", text: "New 94% match: vercel/next.js", time: "2h ago", icon: Target, color: "violet" },
-  { type: "pr", text: "PR merged in shadcn/ui", time: "5h ago", icon: GitPullRequest, color: "emerald" },
-  { type: "issue", text: "good-first-issue in tanstack", time: "1d ago", icon: AlertCircle, color: "cyan" },
-  { type: "star", text: "You starred microsoft/vscode", time: "2d ago", icon: Star, color: "yellow" },
+const activity = [
+  { id: "1", type: "match" as const, title: "New 94% match found", project: "vercel/next.js", time: "2 hours ago" },
+  { id: "2", type: "pr" as const, title: "Your PR was merged", project: "shadcn/ui", time: "5 hours ago" },
+  { id: "3", type: "issue" as const, title: "New good-first-issue assigned", project: "tanstack/query", time: "1 day ago" },
+  { id: "4", type: "star" as const, title: "You starred", project: "microsoft/vscode", time: "2 days ago" },
+  { id: "5", type: "merged" as const, title: "PR merged in", project: "tailwindcss", time: "3 days ago" },
+];
+
+const quickActions = [
+  { label: "Find Projects", icon: Search, href: "/explore", color: "violet" },
+  { label: "Update Profile", icon: Users, href: "/dashboard/profile", color: "cyan" },
+  { label: "Add Project", icon: Plus, href: "/dashboard/projects", color: "emerald" },
 ];
 
 const quickStats = [
-  { label: "Open PRs", value: 8, icon: GitPullRequest, color: "emerald" },
-  { label: "Watched", value: 23, icon: Eye, color: "cyan" },
-  { label: "Following", value: 12, icon: Users, color: "violet" },
+  { label: "Open PRs", value: "8", icon: TrendingUp, color: "emerald" },
+  { label: "Watched", value: "23", icon: Target, color: "violet" },
+  { label: "Following", value: "12", icon: Users, color: "cyan" },
 ];
 
 export default function Dashboard() {
   return (
     <div className="min-h-screen bg-background">
-      {/* Header */}
-      <header className="sticky top-0 z-50 border-b bg-background/80 backdrop-blur-xl">
-        <div className="flex h-16 items-center px-6">
-          <div className="flex items-center gap-3 mr-8">
-            <div className="w-9 h-9 rounded-lg bg-gradient-to-br from-violet-500 via-cyan-500 to-emerald-500 flex items-center justify-center shadow-lg">
-              <Zap className="w-5 h-5 text-white" />
-            </div>
-            <span className="font-bold text-lg">OSS Marketplace</span>
-          </div>
-          
-          <nav className="flex items-center gap-1 flex-1">
-            {[
-              { href: "/", label: "Dashboard", icon: Activity, active: true },
-              { href: "/explore", label: "Explore", icon: Search, active: false },
-              { href: "/dashboard/matches", label: "Matches", icon: Target, active: false },
-              { href: "/dashboard/projects", label: "Projects", icon: GitBranch, active: false },
-            ].map((item) => (
-              <Link key={item.href} href={item.href} className={`flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium transition-all ${
-                item.active 
-                  ? "bg-violet-500/10 text-violet-400 shadow-sm" 
-                  : "text-muted-foreground hover:text-foreground hover:bg-muted/50"
-              }`}>
-                <item.icon className="w-4 h-4" />
-                {item.label}
-              </Link>
-            ))}
-          </nav>
-          
-          <div className="flex items-center gap-2">
-            <Button variant="ghost" size="icon" className="relative">
-              <Bell className="w-5 h-5" />
-              <span className="absolute top-1.5 right-1.5 w-2 h-2 bg-red-500 rounded-full animate-pulse" />
-            </Button>
-            <Button variant="ghost" size="icon">
-              <Settings className="w-5 h-5" />
-            </Button>
-            <div className="w-9 h-9 rounded-full bg-gradient-to-br from-violet-500 to-cyan-500 flex items-center justify-center text-white font-semibold text-sm shadow-md">
-              U
-            </div>
-            <ThemeToggle />
-          </div>
-        </div>
-      </header>
+      <Navbar />
 
       <main className="p-6 max-w-[1600px] mx-auto">
         {/* Welcome Section */}
@@ -115,157 +68,142 @@ export default function Dashboard() {
           animate={{ opacity: 1, y: 0 }}
         >
           <h1 className="text-3xl font-bold mb-1">Welcome back, Alex</h1>
-          <p className="text-muted-foreground">Track your open source contributions and discover new opportunities</p>
+          <p className="text-muted-foreground">Track your open source journey and discover new opportunities</p>
         </motion.div>
 
         {/* Stats Grid */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
           {stats.map((stat, i) => (
-            <motion.div
-              key={stat.label}
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: i * 0.1 }}
-            >
-              <Card className="hover:shadow-lg hover:-translate-y-0.5 transition-all duration-200 cursor-pointer group">
-                <CardContent className="p-5">
-                  <div className="flex items-center justify-between mb-3">
-                    <div className={`w-10 h-10 rounded-xl flex items-center justify-center shadow-sm ${
-                      stat.color === 'violet' ? 'bg-violet-500/10' : 
-                      stat.color === 'cyan' ? 'bg-cyan-500/10' : 'bg-emerald-500/10'
-                    }`}>
-                      <stat.icon className={`w-5 h-5 ${
-                        stat.color === 'violet' ? 'text-violet-500' : 
-                        stat.color === 'cyan' ? 'text-cyan-500' : 'text-emerald-500'
-                      }`} />
-                    </div>
-                    <Badge variant={stat.change.startsWith('+') ? "default" : "secondary"} className={`text-xs ${
-                      stat.change.startsWith('+') ? 'bg-emerald-500/10 text-emerald-600' : ''
-                    }`}>
-                      {stat.change}
-                    </Badge>
-                  </div>
-                  <div className="text-3xl font-bold mb-1">{stat.value}</div>
-                  <div className="text-sm text-muted-foreground">{stat.label}</div>
-                </CardContent>
-              </Card>
-            </motion.div>
+            <StatCard key={stat.label} {...stat} />
           ))}
         </div>
 
+        {/* Main Content Grid */}
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-          {/* Top Matches - Main Content */}
+          {/* Left Column - Matches */}
           <div className="lg:col-span-2 space-y-6">
+            {/* Top Matches */}
             <motion.div
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.2 }}
             >
-              <Card className="overflow-hidden">
-                <CardHeader className="border-b bg-muted/30 py-4">
-                  <div className="flex items-center justify-between">
-                    <div className="flex items-center gap-3">
-                      <div className="w-8 h-8 rounded-lg bg-violet-500/10 flex items-center justify-center">
-                        <Target className="w-4 h-4 text-violet-500" />
-                      </div>
-                      <CardTitle className="text-lg">Top Matches for You</CardTitle>
-                    </div>
-                    <Link href="/dashboard/matches">
-                      <Button variant="ghost" size="sm" className="text-violet-500 hover:text-violet-600">
-                        View All <ChevronRight className="w-4 h-4 ml-1" />
-                      </Button>
-                    </Link>
+              <div className="flex items-center justify-between mb-4">
+                <div className="flex items-center gap-3">
+                  <div className="w-10 h-10 rounded-lg bg-violet-500/10 flex items-center justify-center">
+                    <Target className="w-5 h-5 text-violet-500" />
                   </div>
-                </CardHeader>
-                <CardContent className="p-0">
-                  <div className="divide-y">
-                    {topMatches.map((match, i) => (
-                      <motion.div
-                        key={match.name}
-                        initial={{ opacity: 0, x: -20 }}
-                        animate={{ opacity: 1, x: 0 }}
-                        transition={{ delay: 0.3 + i * 0.1 }}
-                        className="flex items-center justify-between p-4 hover:bg-muted/30 transition-colors cursor-pointer group"
-                      >
-                        <div className="flex items-center gap-4">
-                          <div className="relative">
-                            <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-violet-500/20 to-cyan-500/20 flex items-center justify-center shadow-sm">
-                              <GitBranch className="w-6 h-6 text-violet-500" />
-                            </div>
-                            {match.trending && (
-                              <div className="absolute -top-1 -right-1 w-5 h-5 rounded-full bg-orange-500 flex items-center justify-center">
-                                <Flame className="w-3 h-3 text-white" />
-                              </div>
-                            )}
-                          </div>
-                          <div>
-                            <div className="font-semibold flex items-center gap-2">
-                              {match.name}
-                              <ExternalLink className="w-3 h-3 text-muted-foreground opacity-0 group-hover:opacity-100 transition-opacity" />
-                            </div>
-                            <div className="flex items-center gap-3 mt-1">
-                              <span className="text-xs text-muted-foreground flex items-center gap-1">
-                                <Star className="w-3 h-3" /> {match.stars}
-                              </span>
-                              <span className="text-xs px-2 py-0.5 rounded-full bg-cyan-500/10 text-cyan-600">{match.lang}</span>
-                              <span className="text-xs text-muted-foreground flex items-center gap-1">
-                                <AlertCircle className="w-3 h-3" /> {match.issues} issues
-                              </span>
-                            </div>
-                          </div>
-                        </div>
-                        <div className="text-right flex items-center gap-4">
-                          <div>
-                            <div className="text-2xl font-bold bg-gradient-to-r from-violet-500 to-cyan-500 bg-clip-text text-transparent">
-                              {match.match}%
-                            </div>
-                            <div className="text-xs text-muted-foreground">match score</div>
-                          </div>
-                          <Button size="sm" variant="outline" className="opacity-0 group-hover:opacity-100 transition-opacity">
-                            View
-                          </Button>
-                        </div>
-                      </motion.div>
-                    ))}
+                  <div>
+                    <h2 className="text-lg font-semibold">Top Matches for You</h2>
+                    <p className="text-sm text-muted-foreground">Based on your skills and interests</p>
                   </div>
-                </CardContent>
-              </Card>
+                </div>
+                <Link href="/dashboard/matches">
+                  <Button variant="ghost" size="sm" className="text-violet-500 hover:text-violet-400">
+                    View All <ChevronRight className="w-4 h-4 ml-1" />
+                  </Button>
+                </Link>
+              </div>
+
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                {matches.slice(0, 4).map((match) => (
+                  <MatchCard key={match.name} {...match} />
+                ))}
+              </div>
             </motion.div>
 
-            {/* Quick Stats */}
+            {/* Trending Projects */}
             <motion.div
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.3 }}
             >
-              <Card>
-                <CardHeader className="border-b bg-muted/30 py-4">
-                  <CardTitle className="text-lg">Your GitHub Stats</CardTitle>
-                </CardHeader>
-                <CardContent className="p-4">
-                  <div className="grid grid-cols-3 gap-4">
-                    {quickStats.map((stat) => (
-                      <div key={stat.label} className="text-center p-4 rounded-lg bg-muted/30 hover:bg-muted/50 transition-colors cursor-pointer">
-                        <div className={`w-10 h-10 rounded-lg mx-auto mb-2 flex items-center justify-center ${
-                          stat.color === 'violet' ? 'bg-violet-500/10' : 
-                          stat.color === 'cyan' ? 'bg-cyan-500/10' : 'bg-emerald-500/10'
-                        }`}>
-                          <stat.icon className={`w-5 h-5 ${
-                            stat.color === 'violet' ? 'text-violet-500' : 
-                            stat.color === 'cyan' ? 'text-cyan-500' : 'text-emerald-500'
-                          }`} />
-                        </div>
-                        <div className="text-2xl font-bold">{stat.value}</div>
-                        <div className="text-xs text-muted-foreground">{stat.label}</div>
-                      </div>
-                    ))}
+              <div className="flex items-center justify-between mb-4">
+                <div className="flex items-center gap-3">
+                  <div className="w-10 h-10 rounded-lg bg-orange-500/10 flex items-center justify-center">
+                    <Flame className="w-5 h-5 text-orange-500" />
                   </div>
-                </CardContent>
-              </Card>
+                  <div>
+                    <h2 className="text-lg font-semibold">Trending Now</h2>
+                    <p className="text-sm text-muted-foreground">Hot projects this week</p>
+                  </div>
+                </div>
+              </div>
+
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                {[
+                  { name: "v0", lang: "TypeScript", stars: "8.2k", match: 91 },
+                  { name: "cursor", lang: "TypeScript", stars: "12k", match: 88 },
+                  { name: "bolt.new", lang: "TypeScript", stars: "6.5k", match: 85 },
+                ].map((project, i) => (
+                  <motion.div
+                    key={project.name}
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: 0.4 + i * 0.1 }}
+                    className="p-4 rounded-xl border border-white/5 bg-white/[0.02] backdrop-blur-sm hover:border-white/10 hover:bg-white/[0.04] transition-all cursor-pointer group"
+                  >
+                    <div className="flex items-center justify-between mb-2">
+                      <Badge variant="secondary" className="text-xs">{project.lang}</Badge>
+                      <span className="text-xs font-medium bg-gradient-to-r from-violet-500 to-cyan-500 bg-clip-text text-transparent">
+                        {project.match}%
+                      </span>
+                    </div>
+                    <h3 className="font-semibold group-hover:text-violet-400 transition-colors mb-1">{project.name}</h3>
+                    <span className="text-xs text-muted-foreground flex items-center gap-1">
+                      <Flame className="w-3 h-3 text-yellow-500" />
+                      {project.stars} stars
+                    </span>
+                  </motion.div>
+                ))}
+              </div>
+            </motion.div>
+
+            {/* Your Stats */}
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.4 }}
+            >
+              <div className="flex items-center justify-between mb-4">
+                <div className="flex items-center gap-3">
+                  <div className="w-10 h-10 rounded-lg bg-cyan-500/10 flex items-center justify-center">
+                    <TrendingUp className="w-5 h-5 text-cyan-500" />
+                  </div>
+                  <div>
+                    <h2 className="text-lg font-semibold">Your GitHub Stats</h2>
+                    <p className="text-sm text-muted-foreground">Activity overview</p>
+                  </div>
+                </div>
+              </div>
+
+              <div className="grid grid-cols-3 gap-4">
+                {quickStats.map((stat, i) => (
+                  <motion.div
+                    key={stat.label}
+                    initial={{ opacity: 0, scale: 0.95 }}
+                    animate={{ opacity: 1, scale: 1 }}
+                    transition={{ delay: 0.5 + i * 0.1 }}
+                    className="p-4 rounded-xl border border-white/5 bg-white/[0.02] backdrop-blur-sm hover:bg-white/[0.04] transition-all text-center cursor-pointer group"
+                  >
+                    <div className={`w-10 h-10 rounded-lg mx-auto mb-3 flex items-center justify-center ${
+                      stat.color === 'violet' ? 'bg-violet-500/10' :
+                      stat.color === 'cyan' ? 'bg-cyan-500/10' : 'bg-emerald-500/10'
+                    }`}>
+                      <stat.icon className={`w-5 h-5 ${
+                        stat.color === 'violet' ? 'text-violet-500' :
+                        stat.color === 'cyan' ? 'text-cyan-500' : 'text-emerald-500'
+                      }`} />
+                    </div>
+                    <div className="text-2xl font-bold mb-1">{stat.value}</div>
+                    <div className="text-xs text-muted-foreground">{stat.label}</div>
+                  </motion.div>
+                ))}
+              </div>
             </motion.div>
           </div>
 
-          {/* Right Sidebar */}
+          {/* Right Column - Sidebar */}
           <div className="space-y-6">
             {/* Quick Actions */}
             <motion.div
@@ -273,121 +211,71 @@ export default function Dashboard() {
               animate={{ opacity: 1, x: 0 }}
               transition={{ delay: 0.2 }}
             >
-              <Card>
-                <CardHeader className="border-b bg-muted/30 py-4">
-                  <CardTitle className="text-lg flex items-center gap-2">
-                    <Zap className="w-4 h-4 text-violet-500" />
-                    Quick Actions
-                  </CardTitle>
-                </CardHeader>
-                <CardContent className="p-4 space-y-2">
-                  <Link href="/explore" className="block">
-                    <Button className="w-full justify-start gap-3 h-12 group">
-                      <Search className="w-5 h-5" />
-                      Find Projects
-                      <ArrowRight className="w-4 h-4 ml-auto opacity-0 group-hover:opacity-100 transition-opacity" />
-                    </Button>
-                  </Link>
-                  <Link href="/dashboard/profile" className="block">
-                    <Button variant="outline" className="w-full justify-start gap-3 h-12 group">
-                      <Users className="w-5 h-5" />
-                      Update Profile
-                      <ArrowRight className="w-4 h-4 ml-auto opacity-0 group-hover:opacity-100 transition-opacity" />
-                    </Button>
-                  </Link>
-                  <Link href="/dashboard/projects" className="block">
-                    <Button variant="outline" className="w-full justify-start gap-3 h-12 group">
-                      <Plus className="w-5 h-5" />
-                      Add Project
-                      <ArrowRight className="w-4 h-4 ml-auto opacity-0 group-hover:opacity-100 transition-opacity" />
-                    </Button>
-                  </Link>
-                </CardContent>
-              </Card>
+              <div className="rounded-xl border border-white/5 bg-white/[0.02] backdrop-blur-sm p-4">
+                <h3 className="text-sm font-semibold mb-3 flex items-center gap-2">
+                  <Flame className="w-4 h-4 text-violet-500" />
+                  Quick Actions
+                </h3>
+                <div className="space-y-2">
+                  {quickActions.map((action) => (
+                    <Link key={action.label} href={action.href}>
+                      <Button 
+                        variant="outline" 
+                        className="w-full justify-start gap-3 h-11 group"
+                      >
+                        <action.icon className={`w-5 h-5 ${
+                          action.color === 'violet' ? 'text-violet-500' :
+                          action.color === 'cyan' ? 'text-cyan-500' : 'text-emerald-500'
+                        }`} />
+                        {action.label}
+                        <ArrowRight className="w-4 h-4 ml-auto opacity-0 group-hover:opacity-100 transition-opacity" />
+                      </Button>
+                    </Link>
+                  ))}
+                </div>
+              </div>
             </motion.div>
 
-            {/* Recent Activity */}
+            {/* Activity Feed */}
             <motion.div
               initial={{ opacity: 0, x: 20 }}
               animate={{ opacity: 1, x: 0 }}
               transition={{ delay: 0.3 }}
             >
-              <Card>
-                <CardHeader className="border-b bg-muted/30 py-4">
-                  <div className="flex items-center justify-between">
-                    <CardTitle className="text-lg flex items-center gap-2">
-                      <Activity className="w-4 h-4 text-cyan-500" />
-                      Recent Activity
-                    </CardTitle>
-                    <Badge variant="secondary" className="text-xs">4 new</Badge>
-                  </div>
-                </CardHeader>
-                <CardContent className="p-0">
-                  <div className="divide-y">
-                    {recentActivity.map((item, i) => (
-                      <div key={i} className="flex items-start gap-3 p-4 hover:bg-muted/30 transition-colors cursor-pointer">
-                        <div className={`w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0 ${
-                          item.color === 'violet' ? 'bg-violet-500/10' :
-                          item.color === 'emerald' ? 'bg-emerald-500/10' :
-                          item.color === 'cyan' ? 'bg-cyan-500/10' : 'bg-yellow-500/10'
-                        }`}>
-                          <item.icon className={`w-4 h-4 ${
-                            item.color === 'violet' ? 'text-violet-500' :
-                            item.color === 'emerald' ? 'text-emerald-500' :
-                            item.color === 'cyan' ? 'text-cyan-500' : 'text-yellow-500'
-                          }`} />
-                        </div>
-                        <div className="flex-1 min-w-0">
-                          <p className="text-sm font-medium truncate">{item.text}</p>
-                          <p className="text-xs text-muted-foreground flex items-center gap-1 mt-1">
-                            <Clock className="w-3 h-3" /> {item.time}
-                          </p>
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-                </CardContent>
-              </Card>
+              <ActivityFeed items={activity} />
             </motion.div>
 
-            {/* Trending Projects */}
+            {/* Top Contributors */}
             <motion.div
               initial={{ opacity: 0, x: 20 }}
               animate={{ opacity: 1, x: 0 }}
               transition={{ delay: 0.4 }}
             >
-              <Card>
-                <CardHeader className="border-b bg-muted/30 py-4">
-                  <CardTitle className="text-lg flex items-center gap-2">
-                    <Flame className="w-4 h-4 text-orange-500" />
-                    Trending Now
-                  </CardTitle>
-                </CardHeader>
-                <CardContent className="p-4 space-y-3">
+              <div className="rounded-xl border border-white/5 bg-white/[0.02] backdrop-blur-sm overflow-hidden">
+                <div className="px-4 py-3 border-b border-white/5 bg-white/[0.02]">
+                  <h3 className="text-sm font-semibold">Top Contributors</h3>
+                </div>
+                <div className="divide-y divide-white/5">
                   {[
-                    { name: "v0", lang: "TypeScript", stars: "8.2k" },
-                    { name: "cursor", lang: "TypeScript", stars: "12k" },
-                    { name: "bolt.new", lang: "TypeScript", stars: "6.5k" },
-                  ].map((project, i) => (
-                    <div key={i} className="flex items-center justify-between p-3 rounded-lg bg-muted/30 hover:bg-muted/50 transition-colors cursor-pointer group">
+                    { name: "Sarah Chen", contributions: 234, avatar: "S" },
+                    { name: "Alex Kim", contributions: 189, avatar: "A" },
+                    { name: "Jordan Lee", contributions: 156, avatar: "J" },
+                  ].map((user, i) => (
+                    <div key={user.name} className="px-4 py-3 hover:bg-white/[0.02] transition-colors cursor-pointer group">
                       <div className="flex items-center gap-3">
-                        <div className="w-8 h-8 rounded bg-gradient-to-br from-violet-500/20 to-cyan-500/20 flex items-center justify-center">
-                          <GitBranch className="w-4 h-4 text-violet-500" />
+                        <div className="w-8 h-8 rounded-full bg-gradient-to-br from-violet-500 to-cyan-500 flex items-center justify-center text-white font-semibold text-xs">
+                          {user.avatar}
                         </div>
-                        <div>
-                          <div className="text-sm font-medium">{project.name}</div>
-                          <div className="text-xs text-muted-foreground">{project.lang}</div>
+                        <div className="flex-1 min-w-0">
+                          <p className="text-sm font-medium group-hover:text-violet-400 transition-colors">{user.name}</p>
+                          <p className="text-xs text-muted-foreground">{user.contributions} contributions</p>
                         </div>
-                      </div>
-                      <div className="text-right">
-                        <div className="text-sm font-semibold flex items-center gap-1">
-                          <Star className="w-3 h-3 text-yellow-500" /> {project.stars}
-                        </div>
+                        <Badge variant="secondary" className="text-xs">#{i + 1}</Badge>
                       </div>
                     </div>
                   ))}
-                </CardContent>
-              </Card>
+                </div>
+              </div>
             </motion.div>
           </div>
         </div>
