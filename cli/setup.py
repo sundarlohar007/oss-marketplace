@@ -13,7 +13,6 @@ setup(
     long_description_content_type="text/markdown",
     url="https://github.com/sundarlohar007/oss-marketplace",
     py_modules=["oss_profile", "oss_match", "oss_health"],
-    packages=find_packages(),
     classifiers=[
         "Development Status :: 4 - Beta",
         "Intended Audience :: Developers",
