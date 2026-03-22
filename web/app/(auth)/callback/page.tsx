@@ -1,12 +1,13 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { Suspense, useEffect, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Loader2 } from "lucide-react";
+import { ThemeToggle } from "@/components/theme-toggle";
 
-export default function CallbackPage() {
+function CallbackContent() {
   const [status, setStatus] = useState<"loading" | "success" | "error">("loading");
   const [error, setError] = useState<string | null>(null);
   const router = useRouter();
@@ -102,5 +103,22 @@ export default function CallbackPage() {
         </CardContent>
       </Card>
     </div>
+  );
+}
+
+export default function CallbackPage() {
+  return (
+    <>
+      <div className="fixed top-4 right-4 z-50">
+        <ThemeToggle />
+      </div>
+      <Suspense fallback={
+        <div className="min-h-screen flex items-center justify-center">
+          <Loader2 className="h-12 w-12 animate-spin text-primary" />
+        </div>
+      }>
+        <CallbackContent />
+      </Suspense>
+    </>
   );
 }

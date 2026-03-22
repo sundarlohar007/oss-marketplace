@@ -56,11 +56,13 @@ export default function DashboardPage() {
   const [matches, setMatches] = useState<Match[]>([]);
   const [stats, setStats] = useState<Stats>({ matches: 0, projects: 0, activity: "Loading..." });
   const [loading, setLoading] = useState(true);
+  const [username, setUsername] = useState<string | null>(null);
 
   useEffect(() => {
     const fetchData = async () => {
-      const username = localStorage.getItem("username");
-      if (!username) {
+      const storedUsername = localStorage.getItem("username");
+      setUsername(storedUsername);
+      if (!storedUsername) {
         setLoading(false);
         return;
       }
@@ -161,7 +163,7 @@ export default function DashboardPage() {
           {/* Welcome */}
           <motion.div variants={itemVariants}>
             <h1 className="text-3xl font-bold tracking-tight">
-              Welcome back{localStorage.getItem("username") ? `, @${localStorage.getItem("username")}` : ""}!
+              Welcome back{username ? `, @${username}` : ""}!
             </h1>
             <p className="text-muted-foreground mt-1">
               Here's an overview of your OSS journey
