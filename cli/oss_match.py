@@ -103,8 +103,8 @@ class GitHubClient:
     def get_contributors(self, owner: str, repo: str) -> List[dict]:
         return self.get(f"repos/{owner}/{repo}/contributors") or []
     
-    def search_repos(self, query: str, language: str = None, sort: str = "stars") -> List[dict]:
-        params = {"q": query, "sort": sort, "per_page": 30}
+    def search_repos(self, query: str, language: str = None, sort: str = "stars", per_page: int = 30) -> List[dict]:
+        params = {"q": query, "sort": sort, "per_page": per_page}
         if language:
             params["q"] += f" language:{language}"
         
@@ -124,30 +124,35 @@ class MatchingEngine:
     def calculate_match_score(self, contributor_langs: List[str], repo_langs: Dict[str, int], 
                               repo_metrics: dict) -> dict:
         """Calculate match score between contributor and project."""
-        if not contributor_langs or not repo_langs:
-            return {"score": 0, "breakdown": {}}
+        if not contributor_langs:
+            return {"score": 0, "breakdown": {}, "matching_languages": []}
         
-        repo_lang_set = set(repo_langs.keys())
         contrib_lang_set = set(contributor_langs)
         
-        overlap = contrib_lang_set & repo_lang_set
-        lang_score = len(overlap) / len(repo_lang_set) * 100 if repo_lang_set else 0
+        if repo_langs:
+            repo_lang_set = set(repo_langs.keys())
+            overlap = contrib_lang_set & repo_lang_set
+            lang_score = len(overlap) / len(repo_lang_set) * 100 if repo_lang_set else 0
+            matching_langs = list(overlap)
+        else:
+            lang_score = 50
+            matching_langs = contributor_langs[:1]
         
-        star_score = min(20, repo_metrics.get("stargazers_count", 0) / 100)
+        stars = repo_metrics.get("stargazers_count", 0)
+        star_score = min(40, stars / 1000) if stars > 100 else 0
         
         issue_count = repo_metrics.get("open_issues_count", 0)
         activity_score = min(20, issue_count / 5)
         
         updated_at = repo_metrics.get("updated_at", "")
+        freshness_score = 10
         if updated_at:
             try:
                 update_date = datetime.strptime(updated_at[:10], "%Y-%m-%d")
                 days_old = (datetime.now(timezone.utc) - update_date).days
                 freshness_score = max(0, 20 - (days_old / 30))
             except:
-                freshness_score = 10
-        else:
-            freshness_score = 10
+                pass
         
         total_score = lang_score * 0.4 + star_score + activity_score + freshness_score
         
@@ -159,7 +164,7 @@ class MatchingEngine:
                 "need_level": round(activity_score, 1),
                 "freshness": round(freshness_score, 1)
             },
-            "matching_languages": list(overlap)
+            "matching_languages": matching_langs
         }
     
     def get_project_health(self, repo_data: dict, issues: List[dict]) -> dict:
@@ -209,7 +214,7 @@ class MatchingEngine:
         }
     
     def find_contributor_matches(self, username: str, limit: int = 10) -> List[dict]:
-        """Find projects that match a contributor's skills."""
+        """Find projects that match a contributor's skills. Optimized for speed."""
         console.print(f"\n[cyan]🔍 Analyzing @{username}'s profile...[/cyan]\n")
         
         user = self.github.get_user(username)
@@ -224,72 +229,74 @@ class MatchingEngine:
             if repo.get("language"):
                 lang_counts[repo["language"]] = lang_counts.get(repo["language"], 0) + 1
         
-        top_langs = sorted(lang_counts.keys(), key=lambda x: lang_counts[x], reverse=True)[:5]
+        top_langs = sorted(lang_counts.keys(), key=lambda x: lang_counts[x], reverse=True)[:3]
         
         console.print(f"[green]Found expertise in: {', '.join(top_langs)}[/green]\n")
         
         matches = []
         
-        with Progress(
-            SpinnerColumn(),
-            TextColumn("[progress.description]{task.description}"),
-            console=console
-        ) as progress:
-            task = progress.add_task("[yellow]Finding matching projects...", total=None)
+        console.print("[yellow]Searching for matching projects...[/yellow]")
+        console.print("[dim](This uses search data directly for faster results)[/dim]\n")
+        
+        for lang in top_langs:
+            console.print(f"[dim]Searching {lang} repositories...[/dim]")
+            search_results = self.github.search_repos(f"language:{lang} stars:>100", sort="stars", per_page=30)
             
-            for lang in top_langs[:3]:
-                search_results = self.github.search_repos(f"language:{lang}", sort="stars")
+            for repo in search_results[:15]:
+                owner = repo.get("owner", {})
+                if owner.get("login") == username:
+                    continue
                 
-                for repo in search_results[:20]:
-                    owner = repo.get("owner", {})
-                    if owner.get("login") == username:
-                        continue
-                    
-                    full_name = repo.get("full_name", "")
-                    if "/" not in full_name:
-                        continue
-                    
-                    parts = full_name.split("/")
-                    owner_name, repo_name = parts[0], parts[1]
-                    
-                    full_repo = self.github.get_repo(owner_name, repo_name)
-                    if not full_repo:
-                        continue
-                    
-                    issues = self.github.get_issues(owner_name, repo_name)
-                    languages = self.github.get_repo_languages(owner_name, repo_name)
-                    health = self.get_project_health(full_repo, issues)
-                    
-                    match = self.calculate_match_score(top_langs, languages, {
-                        "stargazers_count": repo.get("stargazers_count", 0),
-                        "open_issues_count": repo.get("open_issues_count", 0),
-                        "updated_at": full_repo.get("updated_at", "")
-                    })
-                    
-                    match.update({
-                        "owner": owner_name,
-                        "name": repo_name,
-                        "full_name": full_name,
-                        "description": repo.get("description") or "No description",
-                        "stars": repo.get("stargazers_count", 0),
-                        "forks": repo.get("forks_count", 0),
-                        "language": repo.get("language"),
-                        "issues_count": len(issues),
-                        "good_first_issues": health["good_first_issues"],
-                        "health_score": health["score"],
-                        "url": repo.get("html_url"),
-                        "matching_languages": match.pop("matching_languages", []),
-                    })
-                    
-                    matches.append(match)
+                full_name = repo.get("full_name", "")
+                if "/" not in full_name:
+                    continue
+                
+                parts = full_name.split("/")
+                owner_name, repo_name = parts[0], parts[1]
+                
+                match = self.calculate_match_score([lang], {}, {
+                    "stargazers_count": repo.get("stargazers_count", 0),
+                    "open_issues_count": repo.get("open_issues_count", 0),
+                    "updated_at": repo.get("updated_at", "")
+                })
+                
+                health_score = 50
+                if repo.get("updated_at"):
+                    try:
+                        update_date = datetime.strptime(repo["updated_at"][:10], "%Y-%m-%d")
+                        days_since = (datetime.now(timezone.utc) - update_date).days
+                        health_score = max(0, 50 - (days_since / 30) * 10)
+                    except:
+                        health_score = 50
+                
+                match.update({
+                    "owner": owner_name,
+                    "name": repo_name,
+                    "full_name": full_name,
+                    "description": repo.get("description") or "No description",
+                    "stars": repo.get("stargazers_count", 0),
+                    "forks": repo.get("forks_count", 0),
+                    "language": repo.get("language"),
+                    "issues_count": repo.get("open_issues_count", 0),
+                    "good_first_issues": "?",
+                    "health_score": round(health_score, 1),
+                    "url": repo.get("html_url"),
+                    "matching_languages": [lang],
+                })
+                
+                matches.append(match)
+                
+                if len(matches) >= limit * 2:
+                    break
             
-            progress.update(task, completed=100)
+            if len(matches) >= limit * 2:
+                break
         
         matches.sort(key=lambda x: x["score"], reverse=True)
         return matches[:limit]
     
     def find_maintainer_matches(self, owner: str, repo: str, limit: int = 10) -> List[dict]:
-        """Find contributors that match a project's needs."""
+        """Find contributors that match a project's needs. Optimized for speed."""
         console.print(f"\n[cyan]🔍 Analyzing {owner}/{repo}...[/cyan]\n")
         
         full_repo = self.github.get_repo(owner, repo)
@@ -297,10 +304,8 @@ class MatchingEngine:
             console.print(f"[red]❌ Repository {owner}/{repo} not found![/red]")
             return []
         
-        languages = self.github.get_repo_languages(owner, repo)
-        issues = self.github.get_issues(owner, repo)
-        contributors = self.github.get_contributors(owner, repo)
-        health = self.get_project_health(full_repo, issues)
+        languages = self.github.get_repo_languages(owner, repo) or {}
+        issues = self.github.get_issues(owner, repo) or []
         
         info = f"""
 [bold]{full_repo.get('full_name', f'{owner}/{repo}')}[/bold]
@@ -309,61 +314,54 @@ class MatchingEngine:
 📊 Stars: {full_repo.get('stargazers_count', 0):,}
 🍴 Forks: {full_repo.get('forks_count', 0):,}
 🐛 Open Issues: {len(issues)}
-✅ Good First Issues: {health['good_first_issues']}
-🏥 Health Score: {health['score']}/100
-
-Languages: {', '.join(languages.keys())}
+Languages: {', '.join(languages.keys()) if languages else 'N/A'}
         """
         console.print(Panel(info, title="📦 Project Info", border_style="cyan"))
         
         matches = []
         
-        with Progress(
-            SpinnerColumn(),
-            TextColumn("[progress.description]{task.description}"),
-            console=console
-        ) as progress:
-            task = progress.add_task("[yellow]Finding potential contributors...", total=None)
+        console.print("[yellow]Finding potential contributors...[/yellow]\n")
+        
+        for lang in list(languages.keys())[:3]:
+            console.print(f"[dim]Searching {lang} developers...[/dim]")
+            search_results = self.github.search_repos(f"language:{lang} stars:>50", sort="stars", per_page=20)
             
-            for lang in list(languages.keys())[:3]:
-                search_results = self.github.search_repos(f"language:{lang}", sort="followers")
+            for result in search_results[:15]:
+                username = result.get("owner", {}).get("login")
+                if not username or username == owner:
+                    continue
                 
-                for result in search_results[:30]:
-                    username = result.get("owner", {}).get("login")
-                    if not username or username == owner:
-                        continue
-                    
-                    user = self.github.get_user(username)
-                    if not user:
-                        continue
-                    
-                    user_repos = self.github.get_repos(username)
-                    
-                    match_score = self.calculate_match_score(
-                        list(languages.keys()),
-                        languages,
-                        {
-                            "stargazers_count": sum(r.get("stargazers_count", 0) for r in user_repos[:10]),
-                            "open_issues_count": user.get("public_repos", 0),
-                            "updated_at": datetime.now(timezone.utc).isoformat()
-                        }
-                    )
-                    
-                    matches.append({
-                        "username": username,
-                        "name": user.get("name") or username,
-                        "bio": user.get("bio") or "",
-                        "followers": user.get("followers", 0),
-                        "public_repos": user.get("public_repos", 0),
-                        "score": match_score["score"],
-                        "breakdown": match_score["breakdown"],
-                        "url": user.get("html_url"),
-                        "matching_languages": list(set(languages.keys()) & set(
-                            r.get("language") for r in user_repos if r.get("language")
-                        ))
-                    })
+                user = self.github.get_user(username)
+                if not user:
+                    continue
+                
+                match_score = self.calculate_match_score(
+                    list(languages.keys()),
+                    languages,
+                    {
+                        "stargazers_count": result.get("stargazers_count", 0),
+                        "open_issues_count": user.get("public_repos", 0),
+                        "updated_at": result.get("updated_at", "")
+                    }
+                )
+                
+                matches.append({
+                    "username": username,
+                    "name": user.get("name") or username,
+                    "bio": user.get("bio") or "",
+                    "followers": user.get("followers", 0),
+                    "public_repos": user.get("public_repos", 0),
+                    "score": match_score["score"],
+                    "breakdown": match_score["breakdown"],
+                    "url": user.get("html_url"),
+                    "matching_languages": [lang]
+                })
+                
+                if len(matches) >= limit * 2:
+                    break
             
-            progress.update(task, completed=100)
+            if len(matches) >= limit * 2:
+                break
         
         matches.sort(key=lambda x: x["score"], reverse=True)
         return matches[:limit]
