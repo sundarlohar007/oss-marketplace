@@ -43,21 +43,6 @@ const config: Config = {
           DEFAULT: "hsl(var(--card))",
           foreground: "hsl(var(--card-foreground))",
         },
-        emerald: {
-          400: "#34d399",
-          500: "#10b981",
-          600: "#059669",
-        },
-        violet: {
-          400: "#a78bfa",
-          500: "#8b5cf6",
-          600: "#7c3aed",
-        },
-        cyan: {
-          400: "#22d3ee",
-          500: "#06b6d4",
-          600: "#0891b2",
-        },
       },
       borderRadius: {
         lg: "var(--radius)",
@@ -67,10 +52,8 @@ const config: Config = {
       backgroundImage: {
         "gradient-radial": "radial-gradient(var(--tw-gradient-stops))",
         "gradient-conic": "conic-gradient(from 180deg at 50% 50%, var(--tw-gradient-stops))",
-        "gradient-violet-cyan": "linear-gradient(135deg, #8b5cf6 0%, #06b6d4 100%)",
-        "gradient-violet-emerald": "linear-gradient(135deg, #8b5cf6 0%, #10b981 100%)",
-        "gradient-dark": "linear-gradient(180deg, #09090b 0%, #18181b 100%)",
-        "gradient-mesh": "radial-gradient(ellipse at 20% 30%, rgba(139, 92, 246, 0.15) 0%, transparent 50%), radial-gradient(ellipse at 80% 70%, rgba(6, 182, 212, 0.15) 0%, transparent 50%), radial-gradient(ellipse at 50% 50%, rgba(16, 185, 129, 0.1) 0%, transparent 60%)",
+        "gradient-violet-cyan": "linear-gradient(135deg, hsl(262 83% 58%) 0%, hsl(189 94% 43%) 100%)",
+        "gradient-violet-emerald": "linear-gradient(135deg, hsl(262 83% 58%) 0%, hsl(160 84% 39%) 100%)",
       },
       boxShadow: {
         "glow-violet": "0 0 20px rgba(139, 92, 246, 0.4), 0 0 40px rgba(139, 92, 246, 0.2)",
@@ -81,9 +64,6 @@ const config: Config = {
         "glass": "0 8px 32px 0 rgba(0, 0, 0, 0.3)",
         "glass-light": "0 8px 32px 0 rgba(0, 0, 0, 0.1)",
         "card-hover": "0 20px 40px -10px rgba(0, 0, 0, 0.3), 0 0 20px rgba(139, 92, 246, 0.1)",
-      },
-      backdropBlur: {
-        xs: "2px",
       },
       keyframes: {
         "accordion-down": {
@@ -150,10 +130,6 @@ const config: Config = {
           from: { transform: "translateY(100%)", opacity: "0" },
           to: { transform: "translateY(0)", opacity: "1" },
         },
-        "count-up": {
-          from: { "--num": "0" },
-          to: { "--num": "var(--num)" },
-        },
         orb: {
           "0%, 100%": { transform: "translate(0, 0) scale(1)" },
           "33%": { transform: "translate(30px, -50px) scale(1.1)" },
@@ -178,27 +154,6 @@ const config: Config = {
         "scale-in": "scale-in 0.3s ease-out",
         "slide-up": "slide-up 0.3s ease-out",
         orb: "orb 15s ease-in-out infinite",
-      },
-      transitionDuration: {
-        "400": "400ms",
-        "600": "600ms",
-        "800": "800ms",
-      },
-      transitionTimingFunction: {
-        "bounce-in": "cubic-bezier(0.68, -0.55, 0.265, 1.55)",
-        "smooth": "cubic-bezier(0.4, 0, 0.2, 1)",
-      },
-      spacing: {
-        "18": "4.5rem",
-        "88": "22rem",
-        "128": "32rem",
-      },
-      minWidth: {
-        "18": "4.5rem",
-      },
-      zIndex: {
-        "100": "100",
-        "1000": "1000",
       },
     },
   },
