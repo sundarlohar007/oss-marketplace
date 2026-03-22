@@ -164,18 +164,19 @@ Culture Match:
 └── Community involvement signals
 ```
 
-## 💰 Pricing
+## 💚 Pricing
 
-| Feature | Free | Pro | Enterprise |
-|---------|------|-----|------------|
-| Contributor Profile | ✅ Unlimited | ✅ Unlimited | ✅ Unlimited |
-| Project Matches | 5/month | Unlimited | Unlimited |
-| AI Issue Generator | 10/month | Unlimited | Unlimited |
-| Health Dashboard | Basic | Advanced | Advanced + Alerts |
-| API Access | ❌ | 1,000 calls/day | Unlimited |
-| Team Management | ❌ | ❌ | ✅ |
-| Priority Support | ❌ | ❌ | ✅ |
-| **Price** | **$0** | **$15/mo** | **$99/mo** |
+**100% Free, forever.** No tiers, no limits, no catch.
+
+| Feature | Free |
+|---------|------|
+| Contributor Profile | ✅ Unlimited |
+| Project Matches | ✅ Unlimited |
+| AI Issue Generator | ✅ Unlimited |
+| Health Dashboard | ✅ Full Access |
+| API Access | ✅ Unlimited |
+| Team Management | ✅ Free |
+| Priority Support | ✅ Community |
 
 ## 🤔 Why This Exists
 

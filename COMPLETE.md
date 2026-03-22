@@ -184,7 +184,7 @@ cp .env.example .env
 ### v1.2 (Growth)
 - [ ] Jobs board
 - [ ] Sponsored projects
-- [ ] Premium tier
+- [ ] Community features
 
 ### v2.0 (Major)
 - [ ] Mobile app

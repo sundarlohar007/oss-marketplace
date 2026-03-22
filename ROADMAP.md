@@ -69,7 +69,7 @@ We're currently building the core CLI tool and API infrastructure.
 ---
 
 ### Phase 5: Growth & Launch (July-August 2026)
-**Goal:** Get 1,000 users and first paying customers
+**Goal:** Get 1,000 users and build community
 
 - [ ] Launch on:
   - [ ] Product Hunt
@@ -81,32 +81,31 @@ We're currently building the core CLI tool and API infrastructure.
 - [ ] Write launch blog post
 - [ ] Build landing page
 - [ ] Start Discord community
-- [ ] First 100 paying users
+- [ ] First 1,000 users
 
-**Deliverable:** 5,000 GitHub stars and first $1,000/month revenue.
+**Deliverable:** 5,000 GitHub stars and 1,000 active users.
 
 ---
 
-### Phase 6: Scale & Monetization (September-December 2026)
-**Goal:** Sustainable revenue
+### Phase 6: Scale & Community (September-December 2026)
+**Goal:** Build a thriving OSS community
 
-- [ ] Implement pricing tiers
-- [ ] Build jobs board
-- [ ] Add team features (Enterprise)
+- [ ] Build jobs board (free for OSS projects)
+- [ ] Add team features (free tier)
 - [ ] Partner with:
   - [ ] GitHub
   - [ ] Vercel
   - [ ] Major OSS foundations
 - [ ] Sponsored project listings
-- [ ] 1,000 paying customers
+- [ ] 10,000 active users
 
-**Deliverable:** $10,000/month recurring revenue.
+**Deliverable:** 50,000 matches made and thriving community.
 
 ---
 
 ## 🔮 Future Ideas (Post-MVP)
 
-These are stretch goals for after we hit $10K/month:
+These are stretch goals for after we build a thriving community:
 
 - **🌍 Global OSS Summit** - Annual conference for matched pairs
 - **🎓 OSS Academy** - Structured learning paths matched to projects
@@ -138,9 +137,9 @@ Have an idea? Open an issue with the label `feature-request`!
 |--------|---------|------|
 | GitHub Stars | 0 | 5,000 |
 | CLI Downloads | 0 | 10,000 |
-| Web Users | 0 | 1,000 |
-| Paying Customers | 0 | 100 |
-| Monthly Revenue | $0 | $10,000 |
+| Web Users | 0 | 10,000 |
+| Matches Made | 0 | 50,000 |
+| Active Contributors | 0 | 1,000 |
 
 ---
 
