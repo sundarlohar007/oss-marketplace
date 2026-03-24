@@ -42,79 +42,185 @@
 
 ---
 
-## 🚀 Quick Start (3 Ways to Use)
+## 🚀 Quick Start (Complete Setup)
 
-### Option 1: Web Dashboard (Recommended for Beginners)
+### Prerequisites
 
-The easiest way to get started with a beautiful, pre-built UI.
+- Node.js 18+
+- Python 3.11+ (for CLI tools)
+- GitHub account
+- Supabase account (free)
+
+---
+
+### Step 1: Create GitHub OAuth App
+
+1. Go to: https://github.com/settings/developers
+2. Click **"New OAuth App"**
+3. Fill in the details:
+   | Field | Value |
+   |-------|-------|
+   | **Application name** | OSS Marketplace |
+   | **Homepage URL** | http://localhost:3000 |
+   | **Authorization callback URL** | http://localhost:3000/api/auth/callback/github |
+4. Click **"Register application"**
+5. Copy the **Client ID** and **Client Secret**
+
+---
+
+### Step 2: Set Up Supabase
+
+1. Go to: https://supabase.com/dashboard
+2. Click **"New project"**
+3. Fill in:
+   | Field | Value |
+   |-------|-------|
+   | **Name** | oss-marketplace |
+   | **Database Password** | Create a strong password |
+   | **Region** | Closest to you |
+4. Wait ~2 minutes for setup
+5. Go to **"Project Settings"** → **"API"**
+6. Copy **Project URL** and **anon public** key
+
+---
+
+### Step 3: Create Database Tables
+
+1. In Supabase dashboard, go to **"SQL Editor"**
+2. Copy and run this SQL:
+
+```sql
+-- Users table (synced from GitHub)
+CREATE TABLE users (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  github_id INTEGER UNIQUE NOT NULL,
+  username TEXT NOT NULL,
+  email TEXT,
+  avatar_url TEXT,
+  name TEXT,
+  bio TEXT,
+  company TEXT,
+  location TEXT,
+  blog TEXT,
+  twitter_username TEXT,
+  public_repos INTEGER DEFAULT 0,
+  followers INTEGER DEFAULT 0,
+  following INTEGER DEFAULT 0,
+  github_created_at TIMESTAMP,
+  last_synced TIMESTAMP DEFAULT NOW(),
+  created_at TIMESTAMP DEFAULT NOW()
+);
+
+-- User preferences for matching
+CREATE TABLE user_preferences (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  user_id UUID REFERENCES users(id) ON DELETE CASCADE,
+  preferred_languages TEXT[],
+  preferred_topics TEXT[],
+  preferred_stars_min INTEGER DEFAULT 0,
+  preferred_stars_max INTEGER,
+  looking_for TEXT,
+  availability TEXT,
+  experience_level TEXT,
+  created_at TIMESTAMP DEFAULT NOW(),
+  updated_at TIMESTAMP DEFAULT NOW()
+);
+
+-- Saved/favorited projects
+CREATE TABLE saved_projects (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  user_id UUID REFERENCES users(id) ON DELETE CASCADE,
+  repo_owner TEXT NOT NULL,
+  repo_name TEXT NOT NULL,
+  match_score INTEGER,
+  notes TEXT,
+  created_at TIMESTAMP DEFAULT NOW(),
+  UNIQUE(user_id, repo_owner, repo_name)
+);
+
+-- Enable RLS
+ALTER TABLE users ENABLE ROW LEVEL SECURITY;
+ALTER TABLE user_preferences ENABLE ROW LEVEL SECURITY;
+ALTER TABLE saved_projects ENABLE ROW LEVEL SECURITY;
+
+-- Create policies
+CREATE POLICY "Users can view own profile" ON users FOR SELECT USING (auth.uid() = id);
+CREATE POLICY "Users can update own profile" ON users FOR UPDATE USING (auth.uid() = id);
+CREATE POLICY "Users can view own preferences" ON user_preferences FOR SELECT USING (auth.uid() = user_id);
+CREATE POLICY "Users can manage own preferences" ON user_preferences FOR ALL USING (auth.uid() = user_id);
+CREATE POLICY "Users can view own saved projects" ON saved_projects FOR SELECT USING (auth.uid() = user_id);
+CREATE POLICY "Users can manage saved projects" ON saved_projects FOR ALL USING (auth.uid() = user_id);
+```
+
+---
+
+### Step 4: Configure Environment Variables
+
+Create `.env.local` in `web/` folder:
+
+```env
+# Generate this with: openssl rand -base64 32
+NEXTAUTH_SECRET=your-random-secret
+
+# From Step 1
+GITHUB_CLIENT_ID=your-github-client-id
+GITHUB_CLIENT_SECRET=your-github-client-secret
+
+# From Step 2
+NEXT_PUBLIC_SUPABASE_URL=your-supabase-url
+NEXT_PUBLIC_SUPABASE_ANON_KEY=your-supabase-anon-key
+```
+
+---
+
+### Step 5: Run the App
 
 ```bash
-# 1. Navigate to web folder
+# Navigate to web folder
 cd oss-marketplace/web
 
-# 2. Install dependencies
+# Install dependencies
 npm install
 
-# 3. Start the dashboard
+# Start development server
 npm run dev
 ```
 
-Open **http://localhost:3000** in your browser.
-
-> **That's it!** The dashboard is fully functional and shows sample data. No setup required.
-
-### Option 2: CLI Tools (For Developers)
-
-Command-line tools for power users and automation.
-
-```bash
-# From the root directory
-cd oss-marketplace
-
-# Find your GitHub profile matches
-python -m cli.oss_match find --contributor your-username
-
-# Generate your contributor DNA
-python -m cli.oss_profile create --github your-username
-
-# Analyze a project's health
-python -m cli.oss_health check --owner owner --repo repository
-```
-
-### Option 3: API Server (For Developers)
-
-Run the full API server locally.
-
-```bash
-cd oss-marketplace/api
-pip install -r requirements.txt
-python -m uvicorn api.main:app --reload
-```
-
-API available at **http://localhost:8000**
+Open **http://localhost:3000** and sign in with GitHub!
 
 ---
 
 ## ✨ Features
 
 ### 🌐 Web Dashboard
+- **GitHub OAuth Login** — Sign in with your GitHub account
 - **Premium Dark UI** — Beautiful zinc-950 dark theme with violet-cyan-emerald accents
-- **Real-time Stats** — View project metrics, activity feeds, and health scores
-- **Easy Navigation** — Sidebar layout with 7 fully functional pages
-- **Responsive Design** — Works on desktop and mobile
+- **Real-time GitHub Data** — View your repositories, activity, and stats
+- **Project Discovery** — Search and explore GitHub repositories
+- **Personalized Matches** — AI-powered project recommendations
 
-### 📊 CLI Tools
-| Tool | Purpose |
-|------|---------|
-| `oss_match` | Find projects matching your skills and interests |
-| `oss_profile` | Generate your contributor DNA profile |
-| `oss_health` | Analyze any project's health and maintenance status |
+### 📊 Dashboard Pages
+| Page | Description |
+|------|-------------|
+| **Dashboard** | Overview with your GitHub stats, repos, and recent activity |
+| **Explore** | Search GitHub projects with filters |
+| **Matches** | Personalized project recommendations |
+| **Projects** | Browse and manage your repositories |
+| **Profile** | View your GitHub profile info |
+| **Analytics** | Contribution activity and language stats |
+| **Settings** | Preferences, notifications, privacy |
 
-### 🧠 Matching Engine
-- **Skill Matching** — Match by programming languages, frameworks, tools
-- **Interest Fit** — Based on README analysis and contribution patterns
-- **Activity Level** — Weekly commit frequency, response times, timezone overlap
-- **Culture Score** — Communication style, documentation quality, community involvement
+---
+
+## 🛠️ Tech Stack
+
+| Component | Technology |
+|-----------|------------|
+| Frontend | Next.js 14, React 18, TypeScript |
+| Styling | Tailwind CSS, Framer Motion |
+| Auth | NextAuth.js + GitHub OAuth |
+| Database | Supabase (PostgreSQL) |
+| Icons | Lucide React |
 
 ---
 
@@ -122,109 +228,42 @@ API available at **http://localhost:8000**
 
 ```
 oss-marketplace/
-├── web/                    # Next.js 14 Dashboard
-│   ├── app/               # App router pages
-│   │   ├── page.tsx       # Dashboard home
-│   │   ├── explore/       # Project discovery
-│   │   ├── matches/       # Your matches
-│   │   ├── projects/      # Your projects
-│   │   ├── profile/       # User profile
-│   │   ├── analytics/     # Activity insights
-│   │   └── settings/      # Settings page
-│   ├── components/        # Reusable components
-│   │   ├── layout/        # Sidebar, Topbar
-│   │   ├── dashboard/     # Stat cards, project cards
-│   │   └── ui/            # Button, Badge components
-│   └── lib/               # Utilities
+├── web/                    # Full-stack SaaS App
+│   ├── app/
+│   │   ├── (dashboard)/   # Protected dashboard routes
+│   │   ├── api/           # API routes
+│   │   ├── login/         # Login page
+│   │   └── page.tsx       # Root redirect
+│   ├── lib/
+│   │   ├── auth/          # NextAuth config
+│   │   ├── github/        # GitHub API client
+│   │   └── supabase/      # Supabase client
+│   └── components/        # React components
 │
-├── cli/                    # Python CLI Tools
-│   ├── oss_profile.py     # Contributor DNA generator
-│   ├── oss_match.py       # Project matching
-│   └── oss_health.py      # Project health analyzer
-│
-├── api/                    # FastAPI Backend
-│   ├── routes/            # API endpoints
-│   ├── services/           # Business logic
-│   └── models/            # Database models
-│
-├── docs/                   # Documentation
-├── tests/                  # Test suite
-└── scripts/                # Helper scripts
+├── cli/                   # Python CLI Tools
+├── api/                   # FastAPI Backend
+└── docs/                  # Documentation
 ```
-
----
-
-## 🎨 Dashboard Preview
-
-The web dashboard includes:
-
-| Page | Description |
-|------|-------------|
-| **Dashboard** | Overview with stats, recent activity, and quick actions |
-| **Explore** | Discover new projects and contributors |
-| **Matches** | View your personalized project matches |
-| **Projects** | Manage your contributed projects |
-| **Profile** | View and edit your contributor profile |
-| **Analytics** | Activity insights and contribution metrics |
-| **Settings** | Theme, notifications, privacy, API keys |
 
 ---
 
 ## 💚 Pricing
 
-**100% Free, forever.** No tiers, no limits, no catch.
+**100% Free, forever.** No tiers, no limits.
 
 | Feature | Free |
 |---------|------|
 | Web Dashboard | ✅ Unlimited |
-| CLI Tools | ✅ Unlimited |
+| GitHub OAuth | ✅ Free |
+| Supabase Free Tier | ✅ 500MB DB |
+| Vercel Hosting | ✅ Free |
 | Project Matches | ✅ Unlimited |
-| API Access | ✅ Unlimited |
-| Team Management | ✅ Free |
-| Priority Support | ✅ Community |
-
----
-
-## 🛠️ Troubleshooting
-
-### Web Dashboard Issues
-
-**Dependencies fail to install?**
-```bash
-cd oss-marketplace/web
-rm -rf node_modules package-lock.json
-npm install
-```
-
-**Port 3000 is already in use?**
-```bash
-# Use a different port
-npm run dev -- -p 3001
-```
-
-### CLI Tool Issues
-
-**Python module not found?**
-```bash
-# Install CLI dependencies
-pip install requests pygithub
-
-# Or run from root directory
-cd oss-marketplace
-python -m cli.oss_match find --contributor your-username
-```
-
-**GitHub API rate limit?**
-- Unauthenticated: 60 requests/hour
-- With GitHub token: 5,000 requests/hour
-
-Create a token at: https://github.com/settings/tokens
 
 ---
 
 ## 🤝 Contributing
 
-Contributions welcome! See [CONTRIBUTING.md](CONTRIBUTING.md) for guidelines.
+Contributions welcome!
 
 ```bash
 # Fork and clone
@@ -234,7 +273,7 @@ cd oss-marketplace
 # Create a feature branch
 git checkout -b feature/amazing-feature
 
-# Make your changes and commit
+# Make changes and commit
 git add .
 git commit -m "Add amazing feature"
 
